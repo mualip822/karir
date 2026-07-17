@@ -1,6 +1,6 @@
 import { useAuthStore } from '../../auth/stores/useAuthStore';
 
-const BASE_URL = 'http://localhost:3000/api';
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const authStore = useAuthStore();

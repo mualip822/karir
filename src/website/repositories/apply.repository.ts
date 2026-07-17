@@ -5,7 +5,7 @@ import type {
 } from "../types/apply.types";
 
 const API_URL =
-  "http://localhost:3000/api/apply";
+  `${import.meta.env.VITE_API_URL}/apply`
 
 export const ApplyRepository = {
   async submit(
@@ -110,7 +110,7 @@ export const ApplyRepository = {
   ) {
     const response =
       await axios.get(
-        "http://localhost:3000/api/profile",
+        `${import.meta.env.VITE_API_URL}/profile`,
         {
           headers: {
             Authorization:
@@ -124,7 +124,7 @@ export const ApplyRepository = {
 
   async getJobs() {
   const response = await axios.get(
-    "http://localhost:3000/api/rekrutmen"
+    `${import.meta.env.VITE_API_URL}/rekrutmen`
   );
 
   return response.data;

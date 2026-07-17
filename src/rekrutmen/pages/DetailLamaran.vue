@@ -163,57 +163,89 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { useLamaranStore } from '../stores/useLamaranStore';
-import type { Lamaran } from '../types/lamaran.types';
+import { computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { useLamaranStore } from "../stores/useLamaranStore";
+import type { Lamaran } from "../types/lamaran.types";
 
 const route = useRoute();
 const store = useLamaranStore();
 
+// ==========================================
+// API HOST (untuk akses /uploads)
+// Development : http://localhost:3000
+// Production  : https://behris-production.up.railway.app
+// ==========================================
+const API_HOST = import.meta.env.VITE_API_URL.replace("/api", "");
+
 const id = Number(route.params.id);
+
 const detail = computed<Lamaran | null>(() => store.detail);
 
 const documents = computed(() => {
   const files = [
-    { key: 'cv', label: 'CV', raw: detail.value?.cv_file },
-    { key: 'ijazah', label: 'Ijazah', raw: detail.value?.ijazah_file },
-    { key: 'transkrip', label: 'Transkrip', raw: detail.value?.transkrip_file },
-    { key: 'pendukung', label: 'Pendukung', raw: detail.value?.pendukung_file },
+    {
+      key: "cv",
+      label: "CV",
+      raw: detail.value?.cv_file,
+    },
+    {
+      key: "ijazah",
+      label: "Ijazah",
+      raw: detail.value?.ijazah_file,
+    },
+    {
+      key: "transkrip",
+      label: "Transkrip",
+      raw: detail.value?.transkrip_file,
+    },
+    {
+      key: "pendukung",
+      label: "Pendukung",
+      raw: detail.value?.pendukung_file,
+    },
   ];
 
   return files.map((doc) => ({
     key: doc.key,
     label: doc.label,
     file: doc.raw
-      ? `http://localhost:3000/uploads/apply/${doc.raw}`
+      ? `${API_HOST}/uploads/apply/${doc.raw}`
       : null,
   }));
 });
 
 const statusLabel = (status: string) => {
   const map: Record<string, string> = {
-    pending: 'Pending',
-    review: 'Review',
-    interview: 'Interview',
-    accepted: 'Diterima',
-    rejected: 'Ditolak',
+    pending: "Pending",
+    review: "Review",
+    interview: "Interview",
+    accepted: "Diterima",
+    rejected: "Ditolak",
   };
+
   return map[status] || status;
 };
 
 const formatDate = (dateStr: string | undefined) => {
-  if (!dateStr) return '-';
+  if (!dateStr) return "-";
+
   const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return '-';
-  return new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+
+  if (isNaN(date.getTime())) return "-";
+
+  return new Intl.DateTimeFormat("id-ID", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date);
 };
 
 const fetchDetail = async () => {
   try {
     await store.fetchDetailLamaran(id);
   } catch (err) {
-    // error sudah dihandle di store
+    console.error(err);
   }
 };
 

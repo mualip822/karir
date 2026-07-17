@@ -1,87 +1,70 @@
 import type {
   LoginPayload,
-} from '../types/auth.types'
+} from "../types/auth.types";
 
 const BASE_URL =
-  'http://localhost:3000/api'
+  import.meta.env.VITE_API_URL;
 
 // =========================
 // LOGIN
 // =========================
-export const loginApi =
-  async (
-    payload: LoginPayload
-  ) => {
+export const loginApi = async (
+  payload: LoginPayload
+) => {
+  const res = await fetch(
+    `${BASE_URL}/auth/login`,
+    {
+      method: "POST",
 
-    const res =
-      await fetch(
-        `${BASE_URL}/auth/login`,
-        {
-          method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
 
-          headers: {
-            'Content-Type':
-              'application/json',
-          },
-
-          body:
-            JSON.stringify(
-              payload
-            ),
-        }
-      )
-
-    const data =
-      await res.json()
-
-    if (!res.ok) {
-
-      throw new Error(
-        data.message ||
-        'Login gagal'
-      )
+      body: JSON.stringify(payload),
     }
+  );
 
-    return data
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(
+      data.message ||
+      "Login gagal"
+    );
   }
+
+  return data;
+};
 
 // =========================
 // LOGIN GOOGLE
 // =========================
-export const googleLoginApi =
-  async (
-    token: string
-  ) => {
+export const googleLoginApi = async (
+  token: string
+) => {
+  const res = await fetch(
+    `${BASE_URL}/auth/google`,
+    {
+      method: "POST",
 
-    const res =
-      await fetch(
-        `${BASE_URL}/auth/google`,
-        {
-          method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
 
-          headers: {
-            'Content-Type':
-              'application/json',
-          },
-
-          body:
-            JSON.stringify({
-              token,
-            }),
-        }
-      )
-
-    const data =
-      await res.json()
-
-    if (!res.ok) {
-
-      throw new Error(
-        data.message ||
-        'Google login gagal'
-      )
-
+      body: JSON.stringify({
+        token,
+      }),
     }
+  );
 
-    return data
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(
+      data.message ||
+      "Google login gagal"
+    );
   }
+
+  return data;
+};

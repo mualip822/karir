@@ -254,7 +254,9 @@ async function loadProfile() {
     if (!data) return;
     Object.assign(form, data);
     if (data.avatar) {
-      avatarUrl.value = `http://localhost:3000${data.avatar}`;
+      const API_HOST = import.meta.env.VITE_API_URL.replace("/api", "");
+
+avatarUrl.value = `${API_HOST}${data.avatar}`;
     }
   } catch (error) {
     console.log(error);

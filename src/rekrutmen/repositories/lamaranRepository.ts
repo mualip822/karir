@@ -1,7 +1,8 @@
 import axios from 'axios';
 import type { Lamaran } from '../types/lamaran.types';
 
-const BASE_URL = 'http://localhost:3000/api/profile';
+const BASE_URL =
+  `${import.meta.env.VITE_API_URL}/profile`;
 
 export const lamaranRepository = {
   async getLamaranSaya(): Promise<Lamaran[]> {

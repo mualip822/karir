@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:3000/api/rekrutmen/lamaran'
+const API_URL =
+  `${import.meta.env.VITE_API_URL}/rekrutmen/lamaran`;
 
 export interface ApplicationData {
   name: string
