@@ -124,7 +124,7 @@ export const ApplyRepository = {
 
   async getJobs() {
   const response = await axios.get(
-    `${import.meta.env.VITE_API_URL}/rekrutmen`
+    `${import.meta.env.VITE_API_URL}/rekrutmen/lowongan`
   );
 
   return response.data;
