@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { Job } from '../types/jobs.types';
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 15000,
 });
 
