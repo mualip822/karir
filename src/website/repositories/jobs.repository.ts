@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { Job } from '../types/jobs.types';
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
   timeout: 15000,
 });
 
@@ -15,13 +15,13 @@ export interface JobTypeOption {
 
 export class JobsRepository {
   async getAll(): Promise<Job[]> {
-  const { data } = await apiClient.get('/rekrutmen');
+    const { data } = await apiClient.get('/api/rekrutmen');
     if (!data.success) throw new Error(data.message || 'Gagal mengambil data');
     return this.mapLowongansToJobs(data.data);
   }
 
- async getJobTypes(): Promise<JobTypeOption[]> {
-  const { data } = await apiClient.get('/rekrutmen/job-types');
+  async getJobTypes(): Promise<JobTypeOption[]> {
+    const { data } = await apiClient.get('/api/rekrutmen/job-types');
     if (!data.success) throw new Error(data.message || 'Gagal mengambil tipe pekerjaan');
     return data.data;
   }
