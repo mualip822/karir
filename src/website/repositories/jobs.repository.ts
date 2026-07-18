@@ -1,6 +1,8 @@
 import axios from 'axios';
 import type { Job } from '../types/jobs.types';
 
+console.log("API URL:", import.meta.env.VITE_API_URL);
+
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   timeout: 15000,
