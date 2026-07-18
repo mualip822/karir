@@ -4,7 +4,8 @@ import type {
   UploadFiles,
 } from "../types/apply.types";
 
-const API_URL =
+
+  const API_URL =
   `${import.meta.env.VITE_API_URL}/apply`
 
 export const ApplyRepository = {

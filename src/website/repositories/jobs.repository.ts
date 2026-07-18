@@ -17,13 +17,13 @@ export interface JobTypeOption {
 
 export class JobsRepository {
   async getAll(): Promise<Job[]> {
-    const { data } = await apiClient.get('/api/rekrutmen');
+    const { data } = await apiClient.get('/rekrutmen');
     if (!data.success) throw new Error(data.message || 'Gagal mengambil data');
     return this.mapLowongansToJobs(data.data);
   }
 
   async getJobTypes(): Promise<JobTypeOption[]> {
-    const { data } = await apiClient.get('/api/rekrutmen/job-types');
+    const { data } = await apiClient.get('/rekrutmen/job-types');
     if (!data.success) throw new Error(data.message || 'Gagal mengambil tipe pekerjaan');
     return data.data;
   }
