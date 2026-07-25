@@ -10,4 +10,18 @@ export default createVuetify({
     defaultSet: "mdi",
   },
 
+  defaults: {
+
+    global: {
+
+      style: {
+
+        fontFamily: "Poppins, sans-serif",
+
+      },
+
+    },
+
+  },
+
 });
