@@ -16,9 +16,7 @@ import router from '../../router'
 // AUTH STORE
 // =========================
 export const useAuthStore = defineStore('auth', {
-
   state: () => ({
-
     // ===================
     // USER
     // ===================
@@ -32,7 +30,18 @@ export const useAuthStore = defineStore('auth', {
     loading: false,
 
     error: '',
+
+    // ===================
+    // AUTH INITIALIZED
+    // ===================
+    initialized: false,
   }),
+
+  getters: {
+    isAuthenticated: (state) => {
+      return !!state.token
+    },
+  },
 
   actions: {
 
@@ -42,32 +51,36 @@ export const useAuthStore = defineStore('auth', {
     async login(payload: LoginPayload) {
 
       try {
-
         this.loading = true
         this.error = ''
 
         const res = await loginService(payload)
 
-        // SUCCESS
         if (res.user && res.token) {
 
           this.user = res.user
           this.token = res.token
 
           localStorage.setItem('token', res.token)
-          localStorage.setItem('user', JSON.stringify(res.user))
+          localStorage.setItem(
+            'user',
+            JSON.stringify(res.user)
+          )
 
           if (payload.remember) {
             localStorage.setItem('remember', 'true')
+          } else {
+            localStorage.removeItem('remember')
           }
 
-          // 🔥 REDIRECT AFTER LOGIN
           await router.replace('/user/dashboard')
         }
 
       } catch (err: any) {
 
-        this.error = err.message || 'Login gagal'
+        this.error =
+          err?.message ||
+          'Login gagal'
 
       } finally {
 
@@ -81,28 +94,35 @@ export const useAuthStore = defineStore('auth', {
     async loginWithGoogle(googleToken: string) {
 
       try {
-
         this.loading = true
         this.error = ''
 
-        const res = await googleLoginService(googleToken)
+        const res =
+          await googleLoginService(googleToken)
 
-        // SUCCESS
         if (res.user && res.token) {
 
           this.user = res.user
           this.token = res.token
 
-          localStorage.setItem('token', res.token)
-          localStorage.setItem('user', JSON.stringify(res.user))
+          localStorage.setItem(
+            'token',
+            res.token
+          )
 
-          // 🔥 REDIRECT AFTER GOOGLE LOGIN
+          localStorage.setItem(
+            'user',
+            JSON.stringify(res.user)
+          )
+
           await router.replace('/user/dashboard')
         }
 
       } catch (err: any) {
 
-        this.error = err.message || 'Google login gagal'
+        this.error =
+          err?.message ||
+          'Google login gagal'
 
       } finally {
 
@@ -111,26 +131,66 @@ export const useAuthStore = defineStore('auth', {
     },
 
     // =========================
-    // INIT AUTH (REFRESH PAGE)
+    // INIT AUTH
+    // DIPANGGIL SAAT APP START
     // =========================
     initAuth() {
 
-      const token = localStorage.getItem('token')
-      const user = localStorage.getItem('user')
+      try {
 
-      if (token) {
-        this.token = token
-      }
+        const token =
+          localStorage.getItem('token')
 
-      if (user) {
-        this.user = JSON.parse(user)
+        const user =
+          localStorage.getItem('user')
+
+        // =========================
+        // RESTORE TOKEN
+        // =========================
+        if (token) {
+          this.token = token
+        } else {
+          this.token = null
+        }
+
+        // =========================
+        // RESTORE USER
+        // =========================
+        if (user) {
+
+          try {
+
+            this.user =
+              JSON.parse(user) as User
+
+          } catch (error) {
+
+            console.error(
+              'USER LOCAL STORAGE INVALID:',
+              error
+            )
+
+            this.user = null
+
+            localStorage.removeItem('user')
+          }
+
+        } else {
+
+          this.user = null
+        }
+
+      } finally {
+
+        // PENTING
+        this.initialized = true
       }
     },
 
     // =========================
-    // LOGOUT
+    // CLEAR AUTH
     // =========================
-    logout() {
+    clearAuth() {
 
       this.user = null
       this.token = null
@@ -138,6 +198,14 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       localStorage.removeItem('remember')
+    },
+
+    // =========================
+    // LOGOUT
+    // =========================
+    logout() {
+
+      this.clearAuth()
 
       router.replace('/login')
     },

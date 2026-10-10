@@ -1,692 +1,899 @@
 <template>
-  <div class="profile-page">
-    <div class="premium-card">
-      <!-- Hero Profile Section with Modern Gradient -->
-      <div class="profile-hero">
-        <div class="hero-bg-blur"></div>
-        <div class="hero-content">
-          <div class="avatar-hero">
-            <div class="avatar-wrapper-modern">
-              <img :src="previewAvatar || avatarUrl" class="avatar-hero-img" alt="Profile Avatar" />
-              <label for="avatar-upload-hero" class="avatar-edit-btn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M3 17.46V20.5C3 21.05 3.45 21.5 4 21.5H7.04C7.29 21.5 7.53 21.41 7.71 21.23L18.81 10.13L13.88 5.2L2.78 16.3C2.6 16.48 2.51 16.72 2.51 16.97L3 17.46ZM20.71 5.63L18.38 3.3C17.99 2.91 17.36 2.91 16.97 3.3L15.13 5.14L20.06 10.07L21.9 8.23C22.29 7.84 22.29 7.21 21.9 6.82L20.71 5.63Z" fill="white"/>
-                </svg>
-              </label>
-            </div>
-            <input type="file" id="avatar-upload-hero" accept="image/*" @change="handleAvatar" style="display: none" />
-            <div v-if="avatarFile" class="avatar-filename-modern">{{ avatarFile.name }}</div>
-          </div>
-          <div class="hero-info">
-            <div class="hero-name-section">
-              <h1 class="hero-name">{{ form.nama || 'Nama Pelamar' }}</h1>
-              <span class="badge-active">Pelamar Aktif</span>
-            </div>
-            <p class="hero-email">{{ form.email || 'email@example.com' }}</p>
-            <p class="hero-desc">Kelola informasi profil Anda untuk melamar pekerjaan dengan lebih mudah.</p>
-          </div>
-        </div>
+  <div class="profile">
+
+    <!-- ==========================================================
+         HERO
+    =========================================================== -->
+    <header class="hero">
+      <div class="hero-avatar">
+        <img
+          :src="previewAvatar || avatarUrl"
+          alt="Avatar"
+          class="avatar-img"
+        />
+        <label for="avatar-upload" class="avatar-edit" aria-label="Ganti foto profil">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+        </label>
+        <input
+          type="file"
+          id="avatar-upload"
+          accept="image/*"
+          class="avatar-input"
+          @change="handleAvatar"
+        />
       </div>
 
-      <!-- Form Sections -->
-      <form @submit.prevent="saveProfile" class="premium-form">
-        <!-- Section 1: Informasi Pribadi -->
-        <div class="form-section-modern">
-          <div class="section-header">
-            <div class="section-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="#2563eb"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="section-title">Informasi Pribadi</h3>
-              <p class="section-subtitle">Data dasar dan identitas Anda</p>
-            </div>
-          </div>
-          <div class="form-grid">
-            <div class="input-group-modern">
-              <label>NIK (16 digit angka)</label>
-              <input 
-                type="text" 
-                v-model="form.nik" 
-                placeholder="Masukkan 16 digit NIK" 
-                maxlength="16"
-              />
-              <span v-if="form.nik && !/^\d+$/.test(form.nik)" class="error-message">
-                ⚠️ NIK harus berupa angka saja
-              </span>
-            </div>
-            <div class="input-group-modern">
-              <label>Nama Lengkap</label>
-              <input type="text" v-model="form.nama" placeholder="Nama lengkap sesuai KTP" />
-            </div>
-            <div class="input-group-modern">
-              <label>Email</label>
-              <input type="email" v-model="form.email" placeholder="email@perusahaan.com" />
-            </div>
-            <div class="input-group-modern">
-              <label>No HP</label>
-              <input type="text" v-model="form.hp" placeholder="Nomor telepon aktif" />
-            </div>
-            <div class="input-group-modern">
-              <label>Tempat Lahir</label>
-              <input type="text" v-model="form.tempat_lahir" placeholder="Kota kelahiran" />
-            </div>
-            <div class="input-group-modern">
-              <label>Tanggal Lahir</label>
-              <input type="date" v-model="form.tanggal_lahir" />
-            </div>
-            <div class="input-group-modern">
-              <label>Jenis Kelamin</label>
-              <select v-model="form.jenis_kelamin">
-                <option value="">Pilih Jenis Kelamin</option>
-                <option value="Laki-laki">Laki-laki</option>
-                <option value="Perempuan">Perempuan</option>
-              </select>
-            </div>
-            <div class="input-group-modern">
-              <label>Agama</label>
-              <input type="text" v-model="form.agama" placeholder="Agama" />
-            </div>
-            <div class="input-group-modern">
-              <label>Status Pernikahan</label>
-              <select v-model="form.status_pernikahan">
-                <option value="">Pilih Status</option>
-                <option value="Menikah">Menikah</option>
-                <option value="Belum Menikah">Belum Menikah</option>
-                <option value="Duda">Duda</option>
-                <option value="Janda">Janda</option>
-              </select>
-            </div>
-            <div class="input-group-modern">
-              <label>Pendidikan Terakhir</label>
-              <input type="text" v-model="form.pendidikan" placeholder="S1, S2, D3, dll" />
-            </div>
-          </div>
+      <div class="hero-info">
+        <div class="hero-name-row">
+          <h1 class="hero-name">
+            {{ form.nama || 'Nama Pelamar' }}
+          </h1>
+          <span class="hero-badge">Pelamar Aktif</span>
         </div>
+        <p class="hero-email">
+          {{ form.email || 'email@example.com' }}
+        </p>
+        <p class="hero-desc">
+          Kelola informasi profil untuk mempermudah proses lamaranmu.
+        </p>
+      </div>
+    </header>
 
-        <!-- Section 2: Alamat & Lokasi -->
-        <div class="form-section-modern">
-          <div class="section-header">
-            <div class="section-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#2563eb"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="section-title">Alamat & Lokasi</h3>
-              <p class="section-subtitle">Domisili dan alamat lengkap</p>
-            </div>
-          </div>
-          <div class="form-grid">
-            <div class="input-group-modern">
-              <label>Provinsi</label>
-              <input type="text" v-model="form.provinsi" placeholder="Provinsi" />
-            </div>
-            <div class="input-group-modern">
-              <label>Kota/Kabupaten</label>
-              <input type="text" v-model="form.kota" placeholder="Kota" />
-            </div>
-            <div class="input-group-modern">
-              <label>Kecamatan</label>
-              <input type="text" v-model="form.kecamatan" placeholder="Kecamatan" />
-            </div>
-            <div class="input-group-modern">
-              <label>Kode Pos (5 digit angka)</label>
-              <input 
-                type="text" 
-                v-model="form.kode_pos" 
-                placeholder="Kode pos" 
-                maxlength="5"
-              />
-              <span v-if="form.kode_pos && !/^\d+$/.test(form.kode_pos)" class="error-message">
-                ⚠️ Kode Pos harus berupa angka saja
-              </span>
-            </div>
-          </div>
-          <div class="input-group-modern full-width">
-            <label>Alamat Lengkap</label>
-            <textarea v-model="form.alamat" rows="4" placeholder="Jalan, RT/RW, Kelurahan/Desa"></textarea>
-          </div>
-        </div>
+    <!-- ==========================================================
+         FORM
+    =========================================================== -->
+    <form class="profile-form" @submit.prevent="saveProfile">
 
-        <!-- Section 3: Media Sosial -->
-        <div class="form-section-modern">
-          <div class="section-header">
-            <div class="section-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z" fill="#2563eb"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="section-title">Media Sosial</h3>
-              <p class="section-subtitle">Tautan profil profesional & sosial</p>
-            </div>
-          </div>
-          <div class="form-grid">
-            <div class="input-group-modern">
-              <label>Instagram</label>
-              <input type="text" v-model="form.instagram" placeholder="@username" />
-            </div>
-            <div class="input-group-modern">
-              <label>Facebook</label>
-              <input type="text" v-model="form.facebook" placeholder="facebook.com/..." />
-            </div>
-            <div class="input-group-modern">
-              <label>LinkedIn</label>
-              <input type="text" v-model="form.linkedin" placeholder="linkedin.com/in/..." />
-            </div>
-            <div class="input-group-modern">
-              <label>Twitter / X</label>
-              <input type="text" v-model="form.twitter" placeholder="@username" />
-            </div>
-            <div class="input-group-modern">
-              <label>TikTok</label>
-              <input type="text" v-model="form.tiktok" placeholder="@username" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="action-buttons-modern">
-          <button type="submit" class="btn-save-premium" :disabled="store.loading">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px;">
-              <path d="M17 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V7L17 3ZM19 19H5V5H16.17L19 7.83V19ZM12 12C10.34 12 9 13.34 9 15C9 16.66 10.34 18 12 18C13.66 18 15 16.66 15 15C15 13.34 13.66 12 12 12Z" fill="currentColor"/>
+      <!-- ============ SECTION: DATA PRIBADI ============ -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-head-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
             </svg>
-            {{ store.loading ? "Menyimpan..." : "Simpan Profile" }}
-          </button>
-          <!-- <button type="button" class="btn-delete-premium" @click="deleteProfile">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px;">
-              <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM19 4H15.5L14.5 3H9.5L8.5 4H5V6H19V4Z" fill="currentColor"/>
-            </svg>
-            Hapus Profile
-          </button> -->
+          </div>
+          <div>
+            <h2 class="section-title">Informasi Pribadi</h2>
+            <p class="section-sub">Data dasar dan identitas Anda</p>
+          </div>
         </div>
-      </form>
-    </div>
+
+        <div class="grid grid-3">
+          <div class="field">
+            <label class="field-label">NIK</label>
+            <input
+              type="text"
+              v-model="form.nik"
+              class="field-input"
+              placeholder="16 digit angka"
+              maxlength="16"
+            />
+            <span v-if="form.nik && !/^\d+$/.test(form.nik)" class="field-error">
+              NIK harus berupa angka saja
+            </span>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Nama Lengkap</label>
+            <input
+              type="text"
+              v-model="form.nama"
+              class="field-input"
+              placeholder="Sesuai KTP"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Email</label>
+            <input
+              type="email"
+              v-model="form.email"
+              class="field-input"
+              placeholder="nama@email.com"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">No HP / WhatsApp</label>
+            <input
+              type="text"
+              v-model="form.hp"
+              class="field-input"
+              placeholder="08xxxxxxxxxx"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Tempat Lahir</label>
+            <input
+              type="text"
+              v-model="form.tempat_lahir"
+              class="field-input"
+              placeholder="Kota kelahiran"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Tanggal Lahir</label>
+            <input
+              type="date"
+              v-model="form.tanggal_lahir"
+              class="field-input"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Jenis Kelamin</label>
+            <select v-model="form.jenis_kelamin" class="field-input field-select">
+              <option value="">Pilih jenis kelamin</option>
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Agama</label>
+            <input
+              type="text"
+              v-model="form.agama"
+              class="field-input"
+              placeholder="Agama"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Status Pernikahan</label>
+            <select v-model="form.status_pernikahan" class="field-input field-select">
+              <option value="">Pilih status</option>
+              <option value="Belum Menikah">Belum Menikah</option>
+              <option value="Menikah">Menikah</option>
+              <option value="Duda">Duda</option>
+              <option value="Janda">Janda</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Pendidikan Terakhir</label>
+            <input
+              type="text"
+              v-model="form.pendidikan"
+              class="field-input"
+              placeholder="Contoh: S1"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SECTION: ALAMAT ============ -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-head-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="section-title">Alamat & Lokasi</h2>
+            <p class="section-sub">Domisili dan alamat lengkap</p>
+          </div>
+        </div>
+
+        <!-- 2 kolom × 2 baris — seimbang -->
+        <div class="grid grid-2">
+          <div class="field">
+            <label class="field-label">Provinsi</label>
+            <input
+              type="text"
+              v-model="form.provinsi"
+              class="field-input"
+              placeholder="Provinsi"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Kota / Kabupaten</label>
+            <input
+              type="text"
+              v-model="form.kota"
+              class="field-input"
+              placeholder="Kota"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Kecamatan</label>
+            <input
+              type="text"
+              v-model="form.kecamatan"
+              class="field-input"
+              placeholder="Kecamatan"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Kode Pos</label>
+            <input
+              type="text"
+              v-model="form.kode_pos"
+              class="field-input"
+              placeholder="5 digit angka"
+              maxlength="5"
+            />
+            <span
+              v-if="form.kode_pos && !/^\d+$/.test(form.kode_pos)"
+              class="field-error"
+            >
+              Kode Pos harus berupa angka
+            </span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Alamat Lengkap</label>
+          <textarea
+            v-model="form.alamat"
+            rows="3"
+            class="field-input field-textarea"
+            placeholder="Jalan, nomor rumah, RT/RW, kelurahan"
+          ></textarea>
+        </div>
+      </section>
+
+      <!-- ============ SECTION: MEDIA SOSIAL ============ -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-head-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="section-title">Media Sosial</h2>
+            <p class="section-sub">Tautan profil profesional & sosial</p>
+          </div>
+        </div>
+
+        <!-- 3 kolom: baris 1 = 3 field, baris 2 = Twitter 1 + TikTok span 2 -->
+        <div class="grid grid-3">
+          <div class="field">
+            <label class="field-label">Instagram</label>
+            <input
+              type="text"
+              v-model="form.instagram"
+              class="field-input"
+              placeholder="@username"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Facebook</label>
+            <input
+              type="text"
+              v-model="form.facebook"
+              class="field-input"
+              placeholder="facebook.com/..."
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">LinkedIn</label>
+            <input
+              type="text"
+              v-model="form.linkedin"
+              class="field-input"
+              placeholder="linkedin.com/in/..."
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Twitter / X</label>
+            <input
+              type="text"
+              v-model="form.twitter"
+              class="field-input"
+              placeholder="@username"
+            />
+          </div>
+
+          <div class="field field-span-2">
+            <label class="field-label">TikTok</label>
+            <input
+              type="text"
+              v-model="form.tiktok"
+              class="field-input"
+              placeholder="@username"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ACTIONS ============ -->
+      <footer class="actions">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          :disabled="store.loading"
+        >
+          <span v-if="store.loading" class="spinner"></span>
+          <svg v-else viewBox="0 0 24 24" width="14" height="14" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
+          <span>{{ store.loading ? 'Menyimpan…' : 'Simpan Profil' }}</span>
+        </button>
+      </footer>
+    </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
-import { useProfileStore } from "../stores/useProfileStore";
+import { reactive, ref, onMounted } from 'vue';
+import { useProfileStore } from '../stores/useProfileStore';
 
+/* ============================================================
+   STORE
+============================================================ */
 const store = useProfileStore();
-const previewAvatar = ref("");
+
+/* ============================================================
+   STATE
+============================================================ */
+const previewAvatar = ref('');
 const avatarFile = ref<File | null>(null);
-const avatarUrl = ref("https://ui-avatars.com/api/?name=User&background=2563eb&color=fff");
+const avatarUrl = ref(
+  'https://ui-avatars.com/api/?name=User&background=2f6bff&color=fff&size=200',
+);
 
 const form = reactive({
-  nik: "",
-  nama: "",
-  email: "",
-  hp: "",
-  alamat: "",
-  pendidikan: "",
-  avatar: "",
-  tempat_lahir: "",
-  tanggal_lahir: "",
-  jenis_kelamin: "",
-  agama: "",
-  status_pernikahan: "",
-  instagram: "",
-  facebook: "",
-  linkedin: "",
-  twitter: "",
-  tiktok: "",
-  provinsi: "",
-  kota: "",
-  kecamatan: "",
-  kode_pos: "",
+  nik: '',
+  nama: '',
+  email: '',
+  hp: '',
+  alamat: '',
+  pendidikan: '',
+  avatar: '',
+  tempat_lahir: '',
+  tanggal_lahir: '',
+  jenis_kelamin: '',
+  agama: '',
+  status_pernikahan: '',
+  instagram: '',
+  facebook: '',
+  linkedin: '',
+  twitter: '',
+  tiktok: '',
+  provinsi: '',
+  kota: '',
+  kecamatan: '',
+  kode_pos: '',
 });
 
+/* ============================================================
+   AVATAR
+============================================================ */
 function handleAvatar(event: Event) {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
   if (!file) return;
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert('Ukuran foto melebihi 2 MB');
+    return;
+  }
+
   avatarFile.value = file;
   previewAvatar.value = URL.createObjectURL(file);
 }
 
+/* ============================================================
+   LOAD PROFILE
+============================================================ */
 async function loadProfile() {
   try {
     const data = await store.fetchProfile();
     if (!data) return;
-    Object.assign(form, data);
-    if (data.avatar) {
-      const API_HOST = import.meta.env.VITE_API_URL.replace("/api", "");
 
-avatarUrl.value = `${API_HOST}${data.avatar}`;
+    Object.assign(form, data);
+
+    if (data.avatar) {
+      const API_HOST = (import.meta.env.VITE_API_URL || '').replace('/api', '');
+      avatarUrl.value = `${API_HOST}${data.avatar}`;
     }
   } catch (error) {
-    console.log(error);
+    // eslint-disable-next-line no-console
+    console.error(error);
   }
 }
 
+/* ============================================================
+   SAVE PROFILE
+============================================================ */
 async function saveProfile() {
   try {
     const formData = new FormData();
+
     Object.entries(form).forEach(([key, value]) => {
-      formData.append(key, value || "");
+      formData.append(key, value || '');
     });
+
     if (avatarFile.value) {
-      formData.append("avatar", avatarFile.value);
+      formData.append('avatar', avatarFile.value);
     }
+
     await store.saveProfile(formData);
-    alert("Profile berhasil disimpan");
+    alert('Profil berhasil disimpan');
     await loadProfile();
   } catch (error) {
-    console.log(error);
-    alert("Gagal menyimpan profile");
+    // eslint-disable-next-line no-console
+    console.error(error);
+    alert('Gagal menyimpan profil');
   }
 }
 
-async function deleteProfile() {
-  const confirmed = confirm("Yakin hapus profile?");
-  if (!confirmed) return;
-  try {
-    await store.deleteProfile();
-    alert("Profile berhasil dihapus");
-    location.reload();
-  } catch (error) {
-    console.log(error);
-  }
-}
-
+/* ============================================================
+   LIFECYCLE
+============================================================ */
 onMounted(() => {
   loadProfile();
 });
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap');
+/* ============================================================
+   TOKENS
+============================================================ */
+.profile {
+  --primary: #2f6bff;
+  --primary-hover: #2457d6;
+  --primary-soft: #eef2ff;
+  --primary-border: #dbe3ff;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+  --success: #16a34a;
+  --success-soft: #ecfdf5;
 
-.profile-page {
-  min-height: 100vh;
-  padding: 40px 32px;
-  background: #f5f7fb;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
+  --danger: #dc2626;
 
-.premium-card {
+  --text: #0d1b2a;
+  --text-secondary: #4a5568;
+  --text-muted: #8b95a5;
+  --text-faint: #a8b0bd;
+
+  --surface: #ffffff;
+  --surface-muted: #fafbfd;
+  --border: #e5e9ef;
+  --border-soft: #eef1f6;
+
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 10px;
+
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  background: #ffffff;
-  border-radius: 32px;
-  box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.02);
-  overflow: hidden;
-  transition: all 0.2s ease;
 }
 
-/* Hero Section */
-.profile-hero {
-  position: relative;
-  background: linear-gradient(135deg, #f0f4fe 0%, #ffffff 100%);
-  padding: 40px 40px 32px 40px;
-  border-bottom: 1px solid rgba(37, 99, 235, 0.08);
-  overflow: hidden;
-}
-
-.hero-bg-blur {
-  position: absolute;
-  top: -40%;
-  right: -20%;
-  width: 280px;
-  height: 280px;
-  background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, rgba(37,99,235,0) 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.hero-content {
+/* ============================================================
+   HERO
+============================================================ */
+.hero {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 24px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
   flex-wrap: wrap;
-  position: relative;
-  z-index: 2;
 }
 
-.avatar-hero {
+.hero-avatar {
+  position: relative;
   flex-shrink: 0;
 }
 
-.avatar-wrapper-modern {
-  position: relative;
-  width: 112px;
-  height: 112px;
-}
-
-.avatar-hero-img {
-  width: 112px;
-  height: 112px;
-  border-radius: 56px;
+.avatar-img {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
   object-fit: cover;
-  border: 4px solid white;
-  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.12);
-  transition: all 0.25s ease;
+  border: 2px solid var(--border);
+  display: block;
+  background: var(--surface-muted);
 }
 
-.avatar-wrapper-modern:hover .avatar-hero-img {
-  transform: scale(1.02);
-  box-shadow: 0 16px 28px -8px rgba(0, 0, 0, 0.15);
-}
-
-.avatar-edit-btn {
+.avatar-edit {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background: #2563eb;
-  border-radius: 32px;
-  width: 36px;
-  height: 36px;
-  display: flex;
+  right: -2px;
+  bottom: -2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #ffffff;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-  border: 2px solid white;
+  border: 2px solid var(--surface);
+  transition: background 0.15s ease;
 }
 
-.avatar-edit-btn:hover {
-  background: #1d4ed8;
-  transform: scale(1.05);
+.avatar-edit:hover {
+  background: var(--primary-hover);
 }
 
-.avatar-filename-modern {
-  margin-top: 12px;
-  font-size: 12px;
-  color: #4b5563;
-  background: #f1f5f9;
-  padding: 4px 12px;
-  border-radius: 40px;
-  text-align: center;
-  max-width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.avatar-input {
+  display: none;
 }
 
 .hero-info {
   flex: 1;
+  min-width: 0;
 }
 
-.hero-name-section {
+.hero-name-row {
   display: flex;
   align-items: center;
+  gap: 10px;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .hero-name {
-  font-size: 28px;
-  font-weight: 700;
-  color: #0a2540;
-  letter-spacing: -0.3px;
   margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--text);
 }
 
-.badge-active {
-  background: #e6f7ec;
-  color: #0e7b32;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 12px;
-  border-radius: 40px;
-  letter-spacing: 0.2px;
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--success-soft);
+  color: var(--success);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .hero-email {
-  font-size: 16px;
-  color: #5c6f87;
-  margin-bottom: 12px;
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  word-break: break-word;
 }
 
 .hero-desc {
-  font-size: 14px;
-  color: #6c7a91;
-  max-width: 500px;
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: 640px;
 }
 
-/* Premium Form */
-.premium-form {
-  padding: 0;
+/* ============================================================
+   FORM
+============================================================ */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.form-section-modern {
-  padding: 32px 40px;
-  border-bottom: 1px solid #eff3f8;
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
 }
 
-.section-header {
+.section-head {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 28px;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-soft);
 }
 
-.section-icon-wrapper {
-  width: 44px;
-  height: 44px;
-  background: #eff4fe;
-  border-radius: 16px;
+.section-head-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .section-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 4px 0;
-  letter-spacing: -0.2px;
-}
-
-.section-subtitle {
-  font-size: 13px;
-  color: #6c7a91;
   margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  line-height: 1.3;
 }
 
-.form-grid {
+.section-sub {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ============================================================
+   GRID
+============================================================ */
+.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px 28px;
+  gap: 16px;
 }
 
-.input-group-modern {
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.field-span-2 {
+  grid-column: span 2;
+}
+
+/* Tablet → grid-3 jadi 2 kolom */
+@media (max-width: 1024px) {
+  .grid-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* TikTok span 1 saja di tablet */
+  .field-span-2 {
+    grid-column: span 1;
+  }
+}
+
+/* Mobile → semua 1 kolom */
+@media (max-width: 720px) {
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .field-span-2 {
+    grid-column: span 1;
+  }
+}
+
+/* ============================================================
+   FIELD
+============================================================ */
+.field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  min-width: 0;
 }
 
-.input-group-modern label {
+.field-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: -0.005em;
+}
+
+.field-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-family: inherit;
   font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  color: #4b5a72;
-}
-
-.input-group-modern input,
-.input-group-modern select,
-.input-group-modern textarea {
-  padding: 14px 18px;
-  border-radius: 16px;
-  border: 1.5px solid #e5e9f0;
-  background: #ffffff;
-  font-size: 15px;
-  font-family: 'Inter', sans-serif;
-  transition: all 0.2s;
+  color: var(--text);
   outline: none;
-  color: #0f172a;
+  box-sizing: border-box;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-.input-group-modern input:focus,
-.input-group-modern select:focus,
-.input-group-modern textarea:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+.field-input::placeholder {
+  color: var(--text-faint);
 }
 
-.input-group-modern input::placeholder,
-.input-group-modern select::placeholder,
-.input-group-modern textarea::placeholder {
-  color: #9aa6b9;
+.field-input:hover {
+  border-color: #d5dae2;
 }
 
-.error-message {
-  font-size: 12px;
-  color: #dc2626;
-  margin-top: 4px;
+.field-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.1);
+}
+
+.field-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b95a5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+  cursor: pointer;
+}
+
+.field-textarea {
+  height: auto;
+  padding: 10px 12px;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.field-error {
+  font-size: 11.5px;
+  color: var(--danger);
+  font-weight: 500;
+}
+
+/* ============================================================
+   ACTIONS
+============================================================ */
+.actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 4px 0 0;
 }
 
-.full-width {
-  grid-column: 1 / -1;
-  margin-top: 4px;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-/* Action Buttons */
-.action-buttons-modern {
-  padding: 32px 40px 40px 40px;
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  background: #ffffff;
-}
-
-.btn-save-premium {
-  background: linear-gradient(105deg, #2563eb 0%, #1d4ed8 100%);
-  color: white;
-  border: none;
-  padding: 14px 32px;
-  border-radius: 44px;
-  font-weight: 600;
-  font-size: 15px;
+.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
+  height: 42px;
+  padding: 0 22px;
+  border-radius: var(--r-md);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition: all 0.15s ease;
 }
 
-.btn-save-premium:hover:not(:disabled) {
-  background: linear-gradient(105deg, #1d4ed8 0%, #1e3a8a 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.3);
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
 }
 
-.btn-save-premium:disabled {
-  opacity: 0.65;
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
-.btn-delete-premium {
-  background: #ffffff;
-  color: #dc2626;
-  border: 1.5px solid #fee2e2;
-  padding: 14px 32px;
-  border-radius: 44px;
-  font-weight: 600;
-  font-size: 15px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: #fef2f2;
+.btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
-.btn-delete-premium:hover {
-  background: #fee2e2;
-  border-color: #fecaca;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(220, 38, 38, 0.1);
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .profile-page {
-    padding: 20px 16px;
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   DESKTOP LEBAR — padding lebih lega
+============================================================ */
+@media (min-width: 1280px) {
+  .hero {
+    padding: 28px 32px;
+    gap: 28px;
   }
 
-  .profile-hero {
-    padding: 28px 24px;
-  }
-
-  .hero-content {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 20px;
-  }
-
-  .hero-name-section {
-    justify-content: center;
-  }
-
-  .hero-desc {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .form-section-modern {
-    padding: 28px 24px;
-  }
-
-  .action-buttons-modern {
-    padding: 24px 24px 32px;
-    flex-direction: column;
-  }
-
-  .btn-save-premium,
-  .btn-delete-premium {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 18px;
+  .avatar-img {
+    width: 96px;
+    height: 96px;
   }
 
   .hero-name {
-    font-size: 24px;
+    font-size: 22px;
+  }
+
+  .section {
+    padding: 28px 32px;
+    gap: 22px;
   }
 }
 
-@media (max-width: 480px) {
-  .avatar-wrapper-modern {
-    width: 96px;
-    height: 96px;
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (max-width: 720px) {
+  .profile { gap: 16px; }
+
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px;
   }
 
-  .avatar-hero-img {
-    width: 96px;
-    height: 96px;
-  }
+  .hero-info { width: 100%; }
 
-  .avatar-edit-btn {
-    width: 32px;
-    height: 32px;
+  .hero-name { font-size: 18px; }
+
+  .section { padding: 18px; }
+
+  .actions .btn {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field-input,
+  .btn,
+  .avatar-edit,
+  .spinner {
+    transition: none;
+    animation: none;
   }
 }
 </style>

@@ -1,24 +1,21 @@
 import type { RouteRecordRaw } from "vue-router";
 
-
 const rekrutmenRoutes: RouteRecordRaw[] = [
-
   {
     path: "/user",
 
-    component: () => 
+    component: () =>
       import("./layouts/UserLayout.vue"),
 
-
     children: [
-
       {
         path: "",
         redirect: "/user/dashboard",
       },
 
-
+      // =========================
       // DASHBOARD
+      // =========================
       {
         path: "dashboard",
         name: "user-dashboard",
@@ -26,8 +23,9 @@ const rekrutmenRoutes: RouteRecordRaw[] = [
           import("./pages/Dashboard.vue"),
       },
 
-
+      // =========================
       // LOWONGAN
+      // =========================
       {
         path: "lowongan",
         name: "user-lowongan",
@@ -35,15 +33,15 @@ const rekrutmenRoutes: RouteRecordRaw[] = [
           import("./pages/Lowongan.vue"),
       },
 
-
+      // =========================
       // LAMARAN
+      // =========================
       {
         path: "lamaran",
         name: "user-lamaran",
         component: () =>
           import("./pages/LamaranSaya.vue"),
       },
-
 
       {
         path: "lamaran/:id",
@@ -52,8 +50,9 @@ const rekrutmenRoutes: RouteRecordRaw[] = [
           import("./pages/DetailLamaran.vue"),
       },
 
-
+      // =========================
       // PESAN
+      // =========================
       {
         path: "pesan",
         name: "user-pesan",
@@ -61,39 +60,41 @@ const rekrutmenRoutes: RouteRecordRaw[] = [
           import("./pages/Messages.vue"),
       },
 
-
       // =========================
-      // TEST KANDIDAT
+      // TEST KANDIDAT — FULLSCREEN MODE
+      // Sidebar & topbar akan disembunyikan via meta.fullscreen
       // =========================
-
-      
-
-
       {
         path: "test/:attemptId/kerjakan",
-
         name: "kerjakan-test",
-
         component: () =>
           import("./pages/KerjakanTest.vue"),
-
         props: true,
+        meta: { fullscreen: true },
       },
-
 
       {
         path: "test/:attemptId/result",
-
         name: "test-result",
-
         component: () =>
           import("./pages/TestResult.vue"),
-
         props: true,
+        meta: { fullscreen: true },
       },
 
+      // =========================
+      // PRESENSI
+      // =========================
+      {
+        path: "presensi",
+        name: "user-presensi",
+        component: () =>
+          import("../modules/presensi/pages/Presensi.vue"),
+      },
 
+      // =========================
       // PROFILE
+      // =========================
       {
         path: "profile",
         name: "user-profile",
@@ -101,19 +102,17 @@ const rekrutmenRoutes: RouteRecordRaw[] = [
           import("./pages/Profile.vue"),
       },
 
-
+      // =========================
       // PENGATURAN
+      // =========================
       {
         path: "pengaturan",
         name: "user-pengaturan",
         component: () =>
           import("./pages/Pengaturan.vue"),
       },
-
     ],
   },
-
 ];
-
 
 export default rekrutmenRoutes;

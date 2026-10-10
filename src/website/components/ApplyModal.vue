@@ -3,359 +3,759 @@
     <Transition name="modal">
       <div v-if="isVisible" class="modal-overlay" @click.self="close">
         <div class="modal-container">
-          <button class="close-btn" @click="close">&times;</button>
 
-          <div class="apply-form-content">
-            <!-- Header Modern -->
+          <button
+            class="close-btn"
+            type="button"
+            aria-label="Tutup formulir"
+            @click="close"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+
+          <div class="apply-content">
+
+            <!-- HEADER -->
             <header class="form-header">
-              <div class="header-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-              </div>
-              <span class="header-badge">Karir YADIN</span>
-              <h1>Formulir Lamaran Kerja</h1>
-              <p>Lengkapi formulir lamaran Anda. Data pribadi otomatis terisi dari profil.</p>
-              <div class="progress-area">
-                <div class="progress-bar-track">
-                  <div class="progress-bar-fill" :style="{ width: progress + '%' }"></div>
-                </div>
-                <span class="progress-text">{{ progress }}% Lengkap</span>
-              </div>
+              <span class="header-eyebrow">Karir YADIN</span>
+              <h1 class="form-title">Formulir Lamaran Kerja</h1>
+              <p class="form-subtitle">
+                Lengkapi formulir lamaran Anda. Data pribadi otomatis terisi dari profil.
+              </p>
             </header>
 
-            <form class="apply-form" @submit.prevent="handleSubmit">
-              <!-- 1. DATA PRIBADI -->
-              <section class="form-card">
-                <div class="card-heading">
-                  <h2>Data Pribadi</h2>
-                  <p>Diambil dari profil Anda. Pastikan profil sudah lengkap.</p>
+            <!-- STEPPER -->
+            <nav class="stepper" aria-label="Langkah pengisian formulir">
+              <ol class="stepper-list">
+                <li
+                  v-for="(label, index) in stepLabels"
+                  :key="index"
+                  class="step"
+                  :class="{
+                    'is-active': currentStep === index + 1,
+                    'is-done': currentStep > index + 1,
+                  }"
+                >
+                  <div class="step-marker">
+                    <span v-if="currentStep > index + 1" class="step-check">
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none"
+                        stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </span>
+                    <span v-else class="step-num">{{ index + 1 }}</span>
+                  </div>
+                  <span class="step-label">{{ label }}</span>
+                </li>
+              </ol>
+
+              <div class="stepper-mobile">
+                <div class="stepper-mobile__text">
+                  <span class="stepper-mobile__current">
+                    Langkah {{ currentStep }} dari {{ stepLabels.length }}
+                  </span>
+                  <strong class="stepper-mobile__label">
+                    {{ stepLabels[currentStep - 1] }}
+                  </strong>
                 </div>
+                <div class="stepper-mobile__bar">
+                  <div
+                    class="stepper-mobile__fill"
+                    :style="{ width: stepPercent + '%' }"
+                  ></div>
+                </div>
+              </div>
+            </nav>
+
+            <!-- FORM -->
+            <form class="apply-form" @submit.prevent="handleSubmit">
+
+              <!-- ============ STEP 1: PRIBADI ============ -->
+              <section v-if="currentStep === 1" class="form-section">
+                <div class="section-head">
+                  <h2 class="section-title">Data Pribadi</h2>
+                  <p class="section-sub">
+                    Diambil dari profil Anda. Pastikan profil sudah lengkap.
+                  </p>
+                </div>
+
                 <div class="form-grid">
                   <div class="form-group">
                     <label>Nama Lengkap</label>
-                    <input type="text" :value="profile?.nama || ''" readonly />
+                    <input type="text" :value="profileData.nama || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>Email</label>
-                    <input type="email" :value="profile?.email || ''" readonly />
+                    <input type="email" :value="profileData.email || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>NIK</label>
-                    <input type="text" :value="profile?.nik || ''" readonly />
+                    <input type="text" :value="profileData.nik || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>No. Handphone (WA)</label>
-                    <input type="tel" :value="profile?.hp || ''" readonly />
+                    <input type="tel" :value="profileData.hp || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>Tempat Lahir</label>
-                    <input type="text" :value="profile?.tempat_lahir || ''" readonly />
+                    <input type="text" :value="profileData.tempat_lahir || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>Tanggal Lahir</label>
-                    <input type="text" :value="profile?.tanggal_lahir || ''" readonly />
+                    <input type="text" :value="profileData.tanggal_lahir || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>Jenis Kelamin</label>
-                    <input type="text" :value="profile?.jenis_kelamin || ''" readonly />
+                    <input type="text" :value="profileData.jenis_kelamin || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>Agama</label>
-                    <input type="text" :value="profile?.agama || ''" readonly />
+                    <input type="text" :value="profileData.agama || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>Status Pernikahan</label>
-                    <input type="text" :value="profile?.status_pernikahan || ''" readonly />
+                    <input
+                      type="text"
+                      :value="profileData.status_pernikahan || profileData.status_menikah || ''"
+                      readonly
+                    />
                   </div>
                   <div class="form-group full-width">
                     <label>Alamat Domisili</label>
-                    <textarea :value="profile?.alamat || ''" rows="2" readonly></textarea>
+                    <textarea :value="profileData.alamat || ''" rows="2" readonly></textarea>
                   </div>
                   <div class="form-group">
                     <label>Provinsi</label>
-                    <input type="text" :value="profile?.provinsi || ''" readonly />
+                    <input type="text" :value="profileData.provinsi || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>Kota</label>
-                    <input type="text" :value="profile?.kota || ''" readonly />
+                    <input type="text" :value="profileData.kota || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>Kecamatan</label>
-                    <input type="text" :value="profile?.kecamatan || ''" readonly />
+                    <input type="text" :value="profileData.kecamatan || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>Facebook</label>
-                    <input type="text" :value="profile?.facebook || ''" readonly />
+                    <input type="text" :value="profileData.facebook || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>Instagram</label>
-                    <input type="text" :value="profile?.instagram || ''" readonly />
+                    <input type="text" :value="profileData.instagram || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>LinkedIn</label>
-                    <input type="text" :value="profile?.linkedin || ''" readonly />
+                    <input type="text" :value="profileData.linkedin || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>Twitter</label>
-                    <input type="text" :value="profile?.twitter || ''" readonly />
+                    <input type="text" :value="profileData.twitter || ''" readonly />
                   </div>
                   <div class="form-group">
                     <label>TikTok</label>
-                    <input type="text" :value="profile?.tiktok || ''" readonly />
+                    <input type="text" :value="profileData.tiktok || ''" readonly />
                   </div>
-                </div>
-              </section>
-
-              <!-- 2. PENDIDIKAN -->
-              <section class="form-card">
-                <div class="card-heading">
-                  <h2>Pendidikan Terakhir</h2>
-                  <p>Data dari profil Anda.</p>
-                </div>
-                <div class="form-grid">
                   <div class="form-group full-width">
                     <label>Pendidikan Terakhir</label>
-                    <input :value="profile?.pendidikan || ''" readonly />
+                    <input
+                      :value="profileData.pendidikan || profileData.pendidikan_terakhir || ''"
+                      readonly
+                    />
                   </div>
                 </div>
               </section>
 
-              <!-- 3. POSISI YANG DILAMAR -->
-              <section class="form-card">
-                <div class="card-heading">
-                  <h2>Posisi yang Dilamar</h2>
-                  <p>Pilih kategori, posisi, dan preferensi penempatan.</p>
+              <!-- ============ STEP 2: POSISI ============ -->
+              <section v-if="currentStep === 2" class="form-section">
+                <div class="section-head">
+                  <h2 class="section-title">Posisi yang Dilamar</h2>
+                  <p class="section-sub">
+                    Pilih kategori, posisi, dan preferensi penempatan.
+                  </p>
                 </div>
+
                 <div class="form-grid">
                   <div class="form-group full-width">
                     <label>Kategori / Divisi <span class="required">*</span></label>
                     <select v-model="selectedCategoryName" required>
                       <option value="">Pilih Kategori</option>
-                      <option v-for="cat in uniqueCategories" :key="cat" :value="cat">{{ cat }}</option>
+                      <option v-for="cat in uniqueCategories" :key="cat" :value="cat">
+                        {{ cat }}
+                      </option>
                     </select>
                   </div>
+
                   <div class="form-group full-width">
                     <label>Pilih Posisi <span class="required">*</span></label>
-                    <select v-model="form.lowongan_id" required :disabled="!selectedCategoryName">
+                    <select
+                      v-model="form.lowongan_id"
+                      required
+                      :disabled="!selectedCategoryName"
+                    >
                       <option value="">Pilih Posisi</option>
-                      <option v-for="job in filteredJobs" :key="job.id" :value="job.id">{{ job.title }}</option>
+                      <option v-for="job in filteredJobs" :key="job.id" :value="job.id">
+                        {{ job.title }}
+                      </option>
                     </select>
                   </div>
+
                   <div class="form-group">
                     <label>Lokasi Penempatan</label>
                     <input type="text" :value="selectedJob?.lokasi || ''" readonly />
                   </div>
+
                   <div class="form-group full-width">
                     <label>Lokasi yang Diharapkan <span class="required">*</span></label>
                     <select v-model="form.expected_location" required>
                       <option value="">Pilih Lokasi yang Diharapkan</option>
-                      <option v-for="loc in distinctLocations" :key="loc" :value="loc">{{ loc }}</option>
+                      <option v-for="loc in distinctLocations" :key="loc" :value="loc">
+                        {{ loc }}
+                      </option>
                     </select>
                   </div>
+
                   <div class="form-group full-width">
-                    <label>Prioritas Pertama (opsional)</label>
+                    <label>Prioritas Pertama <span class="optional">(opsional)</span></label>
                     <select v-model="form.priority_first">
                       <option :value="undefined">-- Pilih prioritas --</option>
-                      <option v-for="job in jobs" :key="job.id" :value="job.id">{{ job.title }}</option>
+                      <option v-for="job in jobs" :key="job.id" :value="job.id">
+                        {{ job.title }}
+                      </option>
                     </select>
                   </div>
                 </div>
               </section>
 
-              <!-- 4. MOTIVASI & INFORMASI TAMBAHAN -->
-              <section class="form-card">
-                <div class="card-heading">
-                  <h2>Motivasi & Informasi Tambahan</h2>
-                  <p>Ceritakan lebih banyak tentang diri Anda.</p>
+              <!-- ============ STEP 3: MOTIVASI ============ -->
+              <section v-if="currentStep === 3" class="form-section">
+                <div class="section-head">
+                  <h2 class="section-title">Motivasi & Informasi Tambahan</h2>
+                  <p class="section-sub">
+                    Ceritakan lebih banyak tentang diri Anda.
+                  </p>
                 </div>
+
                 <div class="form-grid">
                   <div class="form-group full-width">
                     <label>Motivasi Melamar <span class="required">*</span></label>
-                    <textarea v-model="form.motivasi" rows="4" placeholder="Ceritakan motivasi Anda..." required></textarea>
+                    <textarea
+                      v-model="form.motivasi"
+                      rows="4"
+                      placeholder="Ceritakan motivasi Anda..."
+                      required
+                    ></textarea>
                   </div>
+
                   <div class="form-group full-width">
-                    <label>Seberapa besar motivasi Anda bekerja di lembaga pendidikan Islam? (0-10) <span class="required">*</span></label>
+                    <label>
+                      Seberapa besar motivasi Anda bekerja di lembaga pendidikan
+                      Islam? (0–10) <span class="required">*</span>
+                    </label>
                     <select v-model="form.motivasi_skala" required>
                       <option value="">Pilih skala</option>
-                      <option v-for="n in 11" :key="n-1" :value="n-1">{{ n-1 }}</option>
+                      <option v-for="n in 11" :key="n - 1" :value="n - 1">
+                        {{ n - 1 }}
+                      </option>
                     </select>
                   </div>
+
                   <div class="form-group">
                     <label>Ekspektasi Gaji <span class="required">*</span></label>
                     <input type="text" v-model="form.gaji" placeholder="Rp ..." required />
                   </div>
+
                   <div class="form-group full-width">
                     <label>Deskripsi Diri Singkat <span class="required">*</span></label>
-                    <textarea v-model="form.deskripsi" rows="3" placeholder="Ceritakan singkat tentang diri Anda..." required></textarea>
+                    <textarea
+                      v-model="form.deskripsi"
+                      rows="3"
+                      placeholder="Ceritakan singkat tentang diri Anda..."
+                      required
+                    ></textarea>
                   </div>
+
                   <div class="form-group full-width">
-                    <label>Jelaskan secara singkat mengenai diri Anda <span class="required">*</span></label>
+                    <label>
+                      Jelaskan secara singkat mengenai diri Anda
+                      <span class="required">*</span>
+                    </label>
                     <textarea v-model="form.jelaskan_diri" rows="3" required></textarea>
                   </div>
+
                   <div class="form-group full-width">
-                    <label>Apakah Anda rutin menyimak kajian Islam? <span class="required">*</span></label>
-                    <div class="radio-group">
-                      <label class="radio-label"><input type="radio" value="iya" v-model="form.rutin_kajian" /> Iya</label>
-                      <label class="radio-label"><input type="radio" value="tidak" v-model="form.rutin_kajian" /> Tidak</label>
+                    <label>
+                      Apakah Anda rutin menyimak kajian Islam?
+                      <span class="required">*</span>
+                    </label>
+                    <div class="radio-row">
+                      <label
+                        class="radio-pill"
+                        :class="{ 'is-selected': form.rutin_kajian === 'iya' }"
+                      >
+                        <input type="radio" value="iya" v-model="form.rutin_kajian" />
+                        <span class="rp-dot"></span>
+                        <span class="rp-text">Iya</span>
+                      </label>
+                      <label
+                        class="radio-pill"
+                        :class="{ 'is-selected': form.rutin_kajian === 'tidak' }"
+                      >
+                        <input type="radio" value="tidak" v-model="form.rutin_kajian" />
+                        <span class="rp-dot"></span>
+                        <span class="rp-text">Tidak</span>
+                      </label>
                     </div>
                   </div>
-                  <div class="form-group full-width" v-if="form.rutin_kajian === 'iya'">
+
+                  <div v-if="form.rutin_kajian === 'iya'" class="form-group full-width">
                     <label>Ustadz yang biasa diikuti kajiannya</label>
                     <textarea v-model="form.ustadz_kajian" rows="2"></textarea>
                   </div>
+
                   <div class="form-group full-width">
-                    <label>Ulama internasional yang Anda ketahui <span class="required">*</span></label>
+                    <label>
+                      Ulama internasional yang Anda ketahui
+                      <span class="required">*</span>
+                    </label>
                     <input type="text" v-model="form.ulama_internasional" required />
                   </div>
+
                   <div class="form-group full-width">
-                    <label>Ulama Indonesia yang Anda ketahui <span class="required">*</span></label>
+                    <label>
+                      Ulama Indonesia yang Anda ketahui
+                      <span class="required">*</span>
+                    </label>
                     <input type="text" v-model="form.ulama_indonesia" required />
                   </div>
+
                   <div class="form-group full-width">
-                    <label>Situs Islam yang biasa jadi referensi <span class="required">*</span></label>
+                    <label>
+                      Situs Islam yang biasa jadi referensi
+                      <span class="required">*</span>
+                    </label>
                     <input type="text" v-model="form.situs_islam" required />
                   </div>
+
                   <div class="form-group full-width">
-                    <label>Stasiun radio/televisi yang biasa diikuti <span class="required">*</span></label>
+                    <label>
+                      Stasiun radio/televisi yang biasa diikuti
+                      <span class="required">*</span>
+                    </label>
                     <input type="text" v-model="form.media_rujukan" required />
                   </div>
+
                   <div class="form-group full-width">
-                    <label>Sumber informasi lowongan <span class="required">*</span></label>
-                    <div class="radio-group vertical">
-                      <label class="radio-label"><input type="radio" value="Facebook" v-model="form.sumber_info" /> Facebook</label>
-                      <label class="radio-label"><input type="radio" value="Instagram" v-model="form.sumber_info" /> Instagram</label>
-                      <label class="radio-label"><input type="radio" value="Broadcast WA" v-model="form.sumber_info" /> Broadcast WA</label>
-                      <label class="radio-label"><input type="radio" value="Telegram" v-model="form.sumber_info" /> Telegram</label>
-                      <label class="radio-label"><input type="radio" value="Pegawai YADIN" v-model="form.sumber_info" /> Pegawai YADIN</label>
-                      <label class="radio-label"><input type="radio" value="Lainnya" v-model="form.sumber_info" /> Lainnya</label>
+                    <label>
+                      Sumber informasi lowongan <span class="required">*</span>
+                    </label>
+                    <div class="radio-pills-grid">
+                      <label
+                        v-for="opt in sumberInfoOptions"
+                        :key="opt"
+                        class="radio-pill"
+                        :class="{ 'is-selected': form.sumber_info === opt }"
+                      >
+                        <input type="radio" :value="opt" v-model="form.sumber_info" />
+                        <span class="rp-dot"></span>
+                        <span class="rp-text">{{ opt }}</span>
+                      </label>
                     </div>
-                    <input v-if="form.sumber_info === 'Lainnya'" v-model="form.sumber_info_lain" placeholder="Sebutkan sumber lainnya" class="mt-2" />
+                    <input
+                      v-if="form.sumber_info === 'Lainnya'"
+                      v-model="form.sumber_info_lain"
+                      placeholder="Sebutkan sumber lainnya"
+                      class="mt-2"
+                    />
                   </div>
+
                   <div class="form-group full-width">
                     <label>Hobi <span class="required">*</span></label>
                     <input type="text" v-model="form.hobi" required />
                   </div>
+
                   <div class="form-group full-width">
-                    <label>Sakit berat yang pernah diderita <span class="required">*</span></label>
+                    <label>
+                      Sakit berat yang pernah diderita
+                      <span class="required">*</span>
+                    </label>
                     <textarea v-model="form.riwayat_sakit" rows="2" required></textarea>
                   </div>
+
                   <div class="form-group">
-                    <label>Kapan bisa mulai bekerja? <span class="required">*</span></label>
-                    <input type="text" v-model="form.mulai_kerja" required placeholder="Contoh: Juni 2025" />
+                    <label>
+                      Kapan bisa mulai bekerja? <span class="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      v-model="form.mulai_kerja"
+                      required
+                      placeholder="Contoh: Juni 2025"
+                    />
                   </div>
+
                   <div class="form-group full-width">
-                    <label>Tanggal siap bekerja <span class="required">*</span></label>
+                    <label>
+                      Tanggal siap bekerja <span class="required">*</span>
+                    </label>
                     <input type="date" v-model="form.siap_bekerja" required />
                   </div>
                 </div>
               </section>
 
-              <!-- 5. UPLOAD DOKUMEN -->
-              <section class="form-card">
-                <div class="card-heading">
-                  <h2>Upload Dokumen</h2>
-                  <p>Format PDF, JPG, PNG (maks. 2MB). CV, Ijazah, Transkrip wajib.</p>
+              <!-- ============ STEP 4: UPLOAD ============ -->
+              <section v-if="currentStep === 4" class="form-section">
+                <div class="section-head">
+                  <h2 class="section-title">Upload Dokumen</h2>
+                  <p class="section-sub">
+                    Format PDF, JPG, PNG (maks. 2 MB). CV, Ijazah, Transkrip wajib.
+                  </p>
                 </div>
+
                 <div class="upload-grid">
                   <label class="upload-box" :class="{ 'has-file': files.cv }">
-                    <span class="upload-icon">{{ files.cv ? '✅' : '📄' }}</span>
-                    <span>{{ files.cv ? files.cv.name : 'Upload CV' }}</span>
-                    <input type="file" accept=".pdf,.jpg,.jpeg,.png" @change="e => onFileChange(e, 'cv')" />
+                    <span class="upload-icon">
+                      <svg v-if="files.cv" viewBox="0 0 24 24" width="20" height="20"
+                        fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      <svg v-else viewBox="0 0 24 24" width="20" height="20"
+                        fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6" />
+                      </svg>
+                    </span>
+                    <span class="upload-label">
+                      {{ files.cv ? files.cv.name : 'Upload CV' }}
+                    </span>
+                    <input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      @change="e => onFileChange(e, 'cv')"
+                    />
                   </label>
+
                   <label class="upload-box" :class="{ 'has-file': files.ijazah }">
-                    <span class="upload-icon">{{ files.ijazah ? '✅' : '📄' }}</span>
-                    <span>{{ files.ijazah ? files.ijazah.name : 'Scan Ijazah' }}</span>
-                    <input type="file" accept=".pdf,.jpg,.jpeg,.png" @change="e => onFileChange(e, 'ijazah')" />
+                    <span class="upload-icon">
+                      <svg v-if="files.ijazah" viewBox="0 0 24 24" width="20" height="20"
+                        fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      <svg v-else viewBox="0 0 24 24" width="20" height="20"
+                        fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6" />
+                      </svg>
+                    </span>
+                    <span class="upload-label">
+                      {{ files.ijazah ? files.ijazah.name : 'Scan Ijazah' }}
+                    </span>
+                    <input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      @change="e => onFileChange(e, 'ijazah')"
+                    />
                   </label>
+
                   <label class="upload-box" :class="{ 'has-file': files.transkrip }">
-                    <span class="upload-icon">{{ files.transkrip ? '✅' : '📄' }}</span>
-                    <span>{{ files.transkrip ? files.transkrip.name : 'Transkrip Nilai' }}</span>
-                    <input type="file" accept=".pdf,.jpg,.jpeg,.png" @change="e => onFileChange(e, 'transkrip')" />
+                    <span class="upload-icon">
+                      <svg v-if="files.transkrip" viewBox="0 0 24 24" width="20" height="20"
+                        fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      <svg v-else viewBox="0 0 24 24" width="20" height="20"
+                        fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6" />
+                      </svg>
+                    </span>
+                    <span class="upload-label">
+                      {{ files.transkrip ? files.transkrip.name : 'Transkrip Nilai' }}
+                    </span>
+                    <input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      @change="e => onFileChange(e, 'transkrip')"
+                    />
                   </label>
+
                   <label class="upload-box" :class="{ 'has-file': files.pendukung }">
-                    <span class="upload-icon">{{ files.pendukung ? '✅' : '📎' }}</span>
-                    <span>{{ files.pendukung ? files.pendukung.name : 'Berkas Pendukung (opsional)' }}</span>
-                    <input type="file" accept=".pdf,.jpg,.jpeg,.png" @change="e => onFileChange(e, 'pendukung')" />
+                    <span class="upload-icon">
+                      <svg v-if="files.pendukung" viewBox="0 0 24 24" width="20" height="20"
+                        fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      <svg v-else viewBox="0 0 24 24" width="20" height="20"
+                        fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                      </svg>
+                    </span>
+                    <span class="upload-label">
+                      {{ files.pendukung ? files.pendukung.name : 'Berkas Pendukung (opsional)' }}
+                    </span>
+                    <input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      @change="e => onFileChange(e, 'pendukung')"
+                    />
                   </label>
                 </div>
               </section>
 
-              <!-- 6. RINGKASAN LAMARAN -->
-              <section class="form-card summary-card">
-                <div class="card-heading">
-                  <h2>Ringkasan Lamaran</h2>
-                  <p>Periksa kembali sebelum mengirim.</p>
+              <!-- ============ STEP 5: RINGKASAN ============ -->
+              <section v-if="currentStep === 5" class="form-section">
+                <div class="section-head">
+                  <h2 class="section-title">Ringkasan Lamaran</h2>
+                  <p class="section-sub">
+                    Periksa kembali sebelum mengirim.
+                  </p>
                 </div>
+
                 <div class="summary-grid">
-                  <div class="summary-item"><span class="summary-label">Kategori</span><span class="summary-value">{{ selectedCategoryName || '-' }}</span></div>
-                  <div class="summary-item"><span class="summary-label">Posisi</span><span class="summary-value">{{ selectedJob?.title || '-' }}</span></div>
-                  <div class="summary-item"><span class="summary-label">Lokasi Lowongan</span><span class="summary-value">{{ selectedJob?.lokasi || '-' }}</span></div>
-                  <div class="summary-item"><span class="summary-label">Lokasi Diharapkan</span><span class="summary-value">{{ form.expected_location || '-' }}</span></div>
-                  <div class="summary-item"><span class="summary-label">CV</span><span class="summary-value">{{ files.cv?.name || '-' }}</span></div>
-                  <div class="summary-item"><span class="summary-label">Ijazah</span><span class="summary-value">{{ files.ijazah?.name || '-' }}</span></div>
-                  <div class="summary-item"><span class="summary-label">Transkrip</span><span class="summary-value">{{ files.transkrip?.name || '-' }}</span></div>
+                  <div class="summary-item">
+                    <span class="summary-label">Kategori</span>
+                    <span class="summary-value">{{ selectedCategoryName || '-' }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="summary-label">Posisi</span>
+                    <span class="summary-value">{{ selectedJob?.title || '-' }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="summary-label">Lokasi Lowongan</span>
+                    <span class="summary-value">{{ selectedJob?.lokasi || '-' }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="summary-label">Lokasi Diharapkan</span>
+                    <span class="summary-value">{{ form.expected_location || '-' }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="summary-label">Ekspektasi Gaji</span>
+                    <span class="summary-value">{{ form.gaji || '-' }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="summary-label">CV</span>
+                    <span class="summary-value">{{ files.cv?.name || '-' }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="summary-label">Ijazah</span>
+                    <span class="summary-value">{{ files.ijazah?.name || '-' }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="summary-label">Transkrip</span>
+                    <span class="summary-value">{{ files.transkrip?.name || '-' }}</span>
+                  </div>
+                </div>
+
+                <div class="final-note">
+                  <p>
+                    Dengan mengirim lamaran ini, Anda menyetujui data yang
+                    diberikan diproses untuk keperluan rekrutmen.
+                  </p>
                 </div>
               </section>
-            </form>
 
-            <!-- Sticky Footer -->
-            <div class="sticky-footer">
-              <button type="button" class="btn-cancel" @click="close">Batal</button>
-              <button type="button" class="btn-submit" :disabled="loading.submit" @click="handleSubmit">
-                <span v-if="loading.submit" class="spinner"></span>
-                <span v-else>Kirim Lamaran</span>
-              </button>
-            </div>
+              <!-- ACTIONS -->
+              <footer class="form-actions">
+                <div class="form-actions__inner">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    :class="{ 'is-hidden': currentStep === 1 }"
+                    @click="prevStep"
+                  >
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    <span>Kembali</span>
+                  </button>
+
+                  <span
+                    class="form-actions__spacer"
+                    :class="{ 'is-hidden': currentStep !== 1 }"
+                  ></span>
+
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    v-if="currentStep < stepLabels.length"
+                    @click="nextStep"
+                  >
+                    <span>Lanjut</span>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  </button>
+
+                  <button
+                    v-else
+                    type="submit"
+                    class="btn btn-primary"
+                    :disabled="loading.submit"
+                  >
+                    <span v-if="loading.submit" class="spinner"></span>
+                    <span v-else>Kirim Lamaran</span>
+                  </button>
+                </div>
+              </footer>
+            </form>
           </div>
         </div>
       </div>
     </Transition>
   </Teleport>
 
-  <!-- Toast -->
-  <div v-if="toast.message" class="toast" :class="toast.type">{{ toast.message }}</div>
+  <Transition name="toast">
+    <div v-if="toast.message" class="toast" :class="toast.type">
+      {{ toast.message }}
+    </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { useApply } from '../composables/useApply'
-import type { ApplyPayload } from '../types/apply.types'
+import {
+  reactive,
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onBeforeUnmount,
+} from 'vue';
+import { useApply } from '../composables/useApply';
+import type { ApplyPayload } from '../types/apply.types';
 
+/* ============================================================
+   PROPS
+============================================================ */
 const props = defineProps<{
-  jobId?: number | null
-}>()
-const emit = defineEmits<{ (e: 'close'): void }>()
+  jobId?: number | null;
+}>();
 
-const isVisible = ref(true)
-const toast = reactive({ message: '', type: 'success' })
+const emit = defineEmits<{ (e: 'close'): void }>();
 
-const { profile, jobs, distinctLocations, loading, error, loadProfile, loadJobs, submit } = useApply()
+/* ============================================================
+   STATE
+============================================================ */
+const isVisible = ref(true);
+const toast = reactive({
+  message: '',
+  type: 'success' as 'success' | 'error',
+});
 
-// State untuk kategori yang dipilih
-const selectedCategoryName = ref('')
+/* ============================================================
+   COMPOSABLE
+============================================================ */
+const {
+  profile,
+  jobs,
+  distinctLocations,
+  loading,
+  loadProfile,
+  loadJobs,
+  submit,
+} = useApply();
 
-// Computed: daftar kategori unik dari lowongan
+/* ============================================================
+   PROFILE DATA — Defensive pick dari berbagai bentuk response
+============================================================ */
+const profileData = computed<Record<string, any>>(() => {
+  const src: any = profile.value;
+  if (!src || typeof src !== 'object') return {};
+
+  // coba nested umum
+  const candidates = [
+    src.data?.user,
+    src.data?.profile,
+    src.data,
+    src.user,
+    src.profile,
+    src,
+  ];
+
+  for (const c of candidates) {
+    if (
+      c &&
+      typeof c === 'object' &&
+      ('nama' in c || 'email' in c || 'nik' in c)
+    ) {
+      return c as Record<string, any>;
+    }
+  }
+
+  return src as Record<string, any>;
+});
+
+/* ============================================================
+   STEPPER
+============================================================ */
+const stepLabels = ['Pribadi', 'Posisi', 'Motivasi', 'Berkas', 'Ringkasan'];
+const currentStep = ref(1);
+
+const stepPercent = computed(() =>
+  Math.round((currentStep.value / stepLabels.length) * 100),
+);
+
+/* ============================================================
+   OPTIONS
+============================================================ */
+const sumberInfoOptions = [
+  'Facebook',
+  'Instagram',
+  'Broadcast WA',
+  'Telegram',
+  'Pegawai YADIN',
+  'Lainnya',
+];
+
+/* ============================================================
+   CATEGORY / JOB
+============================================================ */
+const selectedCategoryName = ref('');
+
 const uniqueCategories = computed(() => {
-  const cats = jobs.value.map(job => job.category_name || job.kategori?.name).filter(Boolean) as string[]
-  return [...new Set(cats)]
-})
+  const cats = jobs.value
+    .map((job) => job.category_name || job.kategori?.name)
+    .filter(Boolean) as string[];
+  return [...new Set(cats)];
+});
 
-// Computed: daftar lowongan yang sesuai kategori terpilih
 const filteredJobs = computed(() => {
-  if (!selectedCategoryName.value) return []
-  return jobs.value.filter(job => (job.category_name || job.kategori?.name) === selectedCategoryName.value)
-})
+  if (!selectedCategoryName.value) return [];
+  return jobs.value.filter(
+    (job) =>
+      (job.category_name || job.kategori?.name) === selectedCategoryName.value,
+  );
+});
 
-// Computed: lowongan yang dipilih berdasarkan lowongan_id
 const selectedJob = computed(() => {
-  if (!form.lowongan_id || !jobs.value.length) return null
-  return jobs.value.find((j: any) => j.id == form.lowongan_id) || null
-})
+  if (!form.lowongan_id || !jobs.value.length) return null;
+  return jobs.value.find((j: any) => j.id == form.lowongan_id) || null;
+});
 
-// Reset posisi saat kategori berubah
 watch(selectedCategoryName, () => {
-  form.lowongan_id = ''
-})
+  form.lowongan_id = '';
+});
 
+/* ============================================================
+   FORM
+============================================================ */
 const form = reactive({
   lowongan_id: '' as string | number,
   expected_location: '',
@@ -377,16 +777,18 @@ const form = reactive({
   riwayat_sakit: '',
   mulai_kerja: '',
   siap_bekerja: '',
-})
+});
 
 const files = reactive({
   cv: null as File | null,
   ijazah: null as File | null,
   transkrip: null as File | null,
   pendukung: null as File | null,
-})
+});
 
-// Label mapping untuk validasi ramah
+/* ============================================================
+   LABEL MAP
+============================================================ */
 const fieldLabels: Record<string, string> = {
   expected_location: 'Lokasi yang Diharapkan',
   motivasi: 'Motivasi Melamar',
@@ -404,100 +806,147 @@ const fieldLabels: Record<string, string> = {
   riwayat_sakit: 'Riwayat Sakit',
   mulai_kerja: 'Kesiapan Mulai Bekerja',
   siap_bekerja: 'Tanggal Siap Bekerja',
-}
+};
 
-const progress = computed(() => {
-  let sections = 0
-  const total = 5
-
-  // 1. Data pribadi: ada nama
-  if (profile.value?.nama) sections++
-
-  // 2. Pendidikan
-  if (profile.value?.pendidikan) sections++
-
-  // 3. Posisi: kategori dipilih, posisi dipilih, expected_location terisi
-  if (selectedCategoryName.value && form.lowongan_id && form.expected_location) sections++
-
-  // 4. Motivasi: cek semua wajib kecuali kondisional
-  const motivasiFields = [
-    form.motivasi, form.motivasi_skala, form.gaji, form.deskripsi,
-    form.jelaskan_diri, form.rutin_kajian, form.ulama_internasional,
-    form.ulama_indonesia, form.situs_islam, form.media_rujukan,
-    form.sumber_info, form.hobi, form.riwayat_sakit, form.mulai_kerja, form.siap_bekerja
-  ]
-  const motivasiValid = motivasiFields.every(f => f !== '' && f !== null && f !== undefined)
-  if (form.rutin_kajian === 'iya' && !form.ustadz_kajian) {
-    // belum lengkap
-  } else if (motivasiValid) {
-    sections++
-  }
-
-  // 5. Dokumen wajib
-  if (files.cv && files.ijazah && files.transkrip) sections++
-
-  return Math.round((sections / total) * 100)
-})
-
+/* ============================================================
+   HELPERS
+============================================================ */
 function showToast(msg: string, type: 'success' | 'error' = 'success') {
-  toast.message = msg
-  toast.type = type
-  setTimeout(() => { toast.message = '' }, 5000)
+  toast.message = msg;
+  toast.type = type;
+  setTimeout(() => {
+    toast.message = '';
+  }, 5000);
 }
 
 function onFileChange(event: Event, field: keyof typeof files) {
-  const input = event.target as HTMLInputElement
+  const input = event.target as HTMLInputElement;
   if (input.files?.[0]) {
-    const file = input.files[0]
+    const file = input.files[0];
     if (file.size > 2 * 1024 * 1024) {
-      showToast(`File ${file.name} melebihi 2MB`, 'error')
-      return
+      showToast(`File ${file.name} melebihi 2 MB`, 'error');
+      return;
     }
-    files[field] = file
+    files[field] = file;
   }
 }
 
-async function handleSubmit() {
-  // Validasi field wajib
-  if (!selectedCategoryName.value) {
-    showToast('Kategori / Divisi wajib dipilih', 'error')
-    return
-  }
-  const requiredFields: (keyof typeof form)[] = [
-    'expected_location', 'motivasi', 'motivasi_skala', 'gaji', 'deskripsi', 'jelaskan_diri',
-    'rutin_kajian', 'ulama_internasional', 'ulama_indonesia', 'situs_islam', 'media_rujukan',
-    'sumber_info', 'hobi', 'riwayat_sakit', 'mulai_kerja', 'siap_bekerja'
-  ]
-  for (const field of requiredFields) {
-    if (!form[field]) {
-      const label = fieldLabels[field] || field
-      showToast(`${label} wajib diisi`, 'error')
-      return
+/* ============================================================
+   VALIDATION
+============================================================ */
+function validateStep(step: number): boolean {
+  if (step === 2) {
+    if (!selectedCategoryName.value) {
+      showToast('Pilih kategori / divisi terlebih dahulu', 'error');
+      return false;
+    }
+    if (!form.lowongan_id) {
+      showToast('Pilih posisi yang dilamar', 'error');
+      return false;
+    }
+    if (!form.expected_location) {
+      showToast('Pilih lokasi yang diharapkan', 'error');
+      return false;
     }
   }
-  if (form.rutin_kajian === 'iya' && !form.ustadz_kajian) {
-    showToast('Sebutkan ustadz yang biasa Anda ikuti kajiannya', 'error')
-    return
-  }
-  if (!files.cv || !files.ijazah || !files.transkrip) {
-    showToast('CV, Ijazah, dan Transkrip Nilai wajib diupload', 'error')
-    return
-  }
-  if (!form.lowongan_id) {
-    showToast('Pilih posisi yang dilamar', 'error')
-    return
+
+  if (step === 3) {
+    const required: (keyof typeof form)[] = [
+      'motivasi',
+      'motivasi_skala',
+      'gaji',
+      'deskripsi',
+      'jelaskan_diri',
+      'rutin_kajian',
+      'ulama_internasional',
+      'ulama_indonesia',
+      'situs_islam',
+      'media_rujukan',
+      'sumber_info',
+      'hobi',
+      'riwayat_sakit',
+      'mulai_kerja',
+      'siap_bekerja',
+    ];
+    for (const field of required) {
+      if (!form[field]) {
+        const label = fieldLabels[field] || field;
+        showToast(`${label} wajib diisi`, 'error');
+        return false;
+      }
+    }
+    if (form.rutin_kajian === 'iya' && !form.ustadz_kajian) {
+      showToast('Sebutkan ustadz yang biasa Anda ikuti kajiannya', 'error');
+      return false;
+    }
   }
 
-  const token = localStorage.getItem('token') || localStorage.getItem('candidate_token') || ''
+  if (step === 4) {
+    if (!files.cv || !files.ijazah || !files.transkrip) {
+      showToast('CV, Ijazah, dan Transkrip Nilai wajib diupload', 'error');
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+function nextStep() {
+  if (!validateStep(currentStep.value)) return;
+  if (currentStep.value < stepLabels.length) {
+    currentStep.value++;
+    scrollTop();
+  }
+}
+
+function prevStep() {
+  if (currentStep.value > 1) {
+    currentStep.value--;
+    scrollTop();
+  }
+}
+
+function scrollTop() {
+  const el = document.querySelector('.apply-content');
+  if (el) el.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ============================================================
+   SUBMIT
+============================================================ */
+async function handleSubmit() {
+  if (!validateStep(2)) {
+    currentStep.value = 2;
+    return;
+  }
+  if (!validateStep(3)) {
+    currentStep.value = 3;
+    return;
+  }
+  if (!validateStep(4)) {
+    currentStep.value = 4;
+    return;
+  }
+
+  const token =
+    localStorage.getItem('token') ||
+    localStorage.getItem('candidate_token') ||
+    '';
+
   if (!token) {
-    showToast('Anda belum login', 'error')
-    return
+    showToast('Anda belum login', 'error');
+    return;
   }
 
   const payload: ApplyPayload = {
     lowongan_id: Number(form.lowongan_id),
     expected_location: form.expected_location,
-    priority_first: form.priority_first ? Number(form.priority_first) : undefined,
+    priority_first: form.priority_first
+      ? Number(form.priority_first)
+      : undefined,
     motivasi: form.motivasi,
     motivasi_skala: Number(form.motivasi_skala),
     gaji: form.gaji,
@@ -515,7 +964,7 @@ async function handleSubmit() {
     riwayat_sakit: form.riwayat_sakit,
     mulai_kerja: form.mulai_kerja,
     siap_bekerja: form.siap_bekerja,
-  }
+  };
 
   try {
     await submit(token, payload, {
@@ -523,468 +972,751 @@ async function handleSubmit() {
       ijazah: files.ijazah,
       transkrip: files.transkrip,
       pendukung: files.pendukung,
-    })
-    showToast('Lamaran berhasil dikirim!', 'success')
-    setTimeout(() => close(), 2000)
+    });
+    showToast('Lamaran berhasil dikirim!', 'success');
+    setTimeout(() => close(), 2000);
   } catch (e: any) {
-    showToast(e.message || 'Terjadi kesalahan', 'error')
+    showToast(e.message || 'Terjadi kesalahan', 'error');
   }
 }
 
-const close = () => emit('close')
-const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') close() }
+/* ============================================================
+   CLOSE
+============================================================ */
+const close = () => emit('close');
 
+const handleEsc = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') close();
+};
+
+/* ============================================================
+   LIFECYCLE
+============================================================ */
 onMounted(async () => {
-
-  window.addEventListener(
-    'keydown',
-    handleEsc
-  )
-
+  window.addEventListener('keydown', handleEsc);
 
   const token =
     localStorage.getItem('token') ||
     localStorage.getItem('candidate_token') ||
-    ''
+    '';
 
-
-  if (token) {
-
-    await Promise.all([
-      loadProfile(token),
-      loadJobs()
-    ])
-
-
-    // ===============================
-    // AUTO SELECT LOWONGAN DARI PROP
-    // ===============================
-
-    if (props.jobId) {
-
-      const jobData =
-        jobs.value.find(
-          (j: any) =>
-            j.id === props.jobId
-        )
-
-
-      if (jobData) {
-
-        selectedCategoryName.value =
-          jobData.category_name ||
-          jobData.kategori?.name ||
-          ''
-
-
-        form.lowongan_id =
-          props.jobId
-
-      }
-
-    }
-
-
-  } else {
-
-    showToast(
-      'Silakan login terlebih dahulu',
-      'error'
-    )
-
+  if (!token) {
+    showToast('Silakan login terlebih dahulu', 'error');
+    return;
   }
 
-})
+  await Promise.all([loadJobs(), loadProfile(token)]);
 
+  if (props.jobId) {
+    const jobData = jobs.value.find((j: any) => j.id === props.jobId);
+    if (jobData) {
+      selectedCategoryName.value =
+        jobData.category_name || jobData.kategori?.name || '';
+      form.lowongan_id = props.jobId;
+    }
+  }
+});
 
 onBeforeUnmount(() => {
-
-  window.removeEventListener(
-    'keydown',
-    handleEsc
-  )
-
-})
+  window.removeEventListener('keydown', handleEsc);
+});
 </script>
 
 <style scoped>
-/* Modern, clean SaaS style */
 .modal-overlay {
+  --primary: #2f6bff;
+  --primary-hover: #2457d6;
+  --primary-soft: #eef2ff;
+  --primary-border: #dbe3ff;
+
+  --success: #16a34a;
+  --success-soft: #ecfdf5;
+
+  --danger: #dc2626;
+
+  --text: #0d1b2a;
+  --text-secondary: #4a5568;
+  --text-muted: #8b95a5;
+  --text-faint: #a8b0bd;
+
+  --surface: #ffffff;
+  --surface-muted: #fafbfd;
+  --border: #e5e9ef;
+  --border-soft: #eef1f6;
+
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 10px;
+
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(8px);
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 99999;
   padding: 20px;
+  background: rgba(13, 27, 42, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
+
 .modal-container {
   position: relative;
   width: 100%;
-  max-width: 960px;
+  max-width: 820px;
   max-height: calc(100vh - 40px);
-  overflow-y: auto;
-  border-radius: 24px;
-  background: #ffffff;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow:
+    0 24px 48px -12px rgba(13, 27, 42, 0.18),
+    0 12px 24px -12px rgba(13, 27, 42, 0.10);
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: var(--text);
 }
+
 .close-btn {
   position: absolute;
   top: 16px;
   right: 16px;
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 50%;
-  background: #f1f5f9;
-  color: #64748b;
-  font-size: 1.25rem;
-  cursor: pointer;
   z-index: 20;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.close-btn:hover {
+  background: var(--surface-muted);
+  border-color: #d5dae2;
+  color: var(--text);
+}
+
+.apply-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 28px 28px 0;
+}
+
+.apply-content::-webkit-scrollbar { width: 6px; }
+.apply-content::-webkit-scrollbar-track { background: transparent; }
+.apply-content::-webkit-scrollbar-thumb {
+  background: #d5dae2;
+  border-radius: 999px;
+}
+
+.form-header { margin-bottom: 22px; }
+
+.header-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+  padding: 4px 10px;
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-border);
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.form-title {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.form-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.stepper {
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  margin-bottom: 20px;
+}
+
+.stepper-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+  position: relative;
+}
+
+.step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 1;
+}
+
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: calc(50% + 14px);
+  right: calc(-50% + 14px);
+  height: 2px;
+  background: var(--border);
+  z-index: -1;
+  transition: background 0.3s ease;
+}
+
+.step.is-done:not(:last-child)::after {
+  background: var(--primary);
+}
+
+.step-marker {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-}
-.close-btn:hover {
-  background: #e2e8f0;
-  color: #0f172a;
-}
-
-.apply-form-content {
-  padding: 32px 28px 0;
-}
-
-/* Header */
-.form-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-.header-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  background: #eff6ff;
-  color: #2563eb;
-  margin-bottom: 16px;
-}
-.header-badge {
-  display: inline-flex;
-  padding: 6px 16px;
-  border-radius: 100px;
-  background: #f1f5f9;
-  color: #475569;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-bottom: 20px;
-  letter-spacing: 0.5px;
-}
-.form-header h1 {
-  font-size: 1.75rem;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
   font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 8px;
-}
-.form-header p {
-  font-size: 0.9rem;
-  color: #64748b;
-  margin-bottom: 24px;
-}
-.progress-area {
-  max-width: 300px;
-  margin: 0 auto;
-}
-.progress-bar-track {
-  width: 100%;
-  height: 6px;
-  background: #e2e8f0;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-.progress-bar-fill {
-  height: 100%;
-  background: #2563eb;
-  border-radius: 10px;
-  transition: width 0.4s ease;
-}
-.progress-text {
-  font-size: 0.75rem;
-  color: #475569;
-  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-/* Cards */
+.step.is-active .step-marker {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.step.is-done .step-marker {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+.step-num { line-height: 1; }
+.step-check { display: flex; line-height: 1; }
+
+.step-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.step.is-active .step-label {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.step.is-done .step-label {
+  color: var(--text-secondary);
+}
+
+.stepper-mobile { display: none; }
+
+.stepper-mobile__text {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.stepper-mobile__current {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.stepper-mobile__label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stepper-mobile__bar {
+  height: 4px;
+  background: var(--border-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.stepper-mobile__fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+
 .apply-form {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-}
-.form-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 20px;
-  padding: 28px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-  transition: box-shadow 0.2s;
-}
-.form-card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
-}
-.card-heading {
-  margin-bottom: 24px;
-}
-.card-heading h2 {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 4px;
-}
-.card-heading p {
-  color: #64748b;
-  font-size: 0.8rem;
-}
-
-/* Grid */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
 }
-.full-width {
-  grid-column: 1 / -1;
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
 }
 
-/* Form group */
+.section-head {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.section-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.section-sub {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.full-width { grid-column: 1 / -1; }
+
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
 .form-group label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #334155;
-  margin-bottom: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
 }
+
 .required {
-  color: #ef4444;
+  color: var(--danger);
+  font-weight: 700;
+  margin-left: 2px;
 }
+
+.optional {
+  color: var(--text-faint);
+  font-weight: 400;
+  font-size: 11.5px;
+  margin-left: 2px;
+}
+
 .form-group input,
 .form-group textarea,
 .form-group select {
   width: 100%;
-  padding: 10px 14px;
-  border: 1px solid #dbe2ea;
-  border-radius: 12px;
-  background: #ffffff;
-  font-size: 0.9rem;
-  color: #1e293b;
+  min-height: 40px;
+  padding: 9px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text);
   outline: none;
-  transition: border 0.2s, box-shadow 0.2s;
-  height: 44px;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-.form-group textarea {
-  height: auto;
+
+.form-group input:hover,
+.form-group textarea:hover,
+.form-group select:hover {
+  border-color: #d5dae2;
 }
+
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.1);
 }
+
 .form-group input[readonly],
 .form-group textarea[readonly] {
-  background: #f8fafc;
-  color: #64748b;
-  cursor: not-allowed;
+  background: var(--surface-muted);
+  color: var(--text);
+  cursor: default;
+  border-color: var(--border-soft);
+  font-weight: 500;
 }
 
-.radio-group {
-  display: flex;
-  gap: 24px;
-  padding: 8px 0;
+.form-group textarea {
+  min-height: 72px;
+  resize: vertical;
+  line-height: 1.5;
 }
-.radio-group.vertical {
-  flex-direction: column;
-  gap: 12px;
+
+.mt-2 { margin-top: 8px; }
+
+.radio-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
-.radio-label {
+
+.radio-pills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.radio-pill {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
-  color: #334155;
-}
-.mt-2 {
-  margin-top: 8px;
+  gap: 10px;
+  padding: 11px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
 }
 
-/* Upload */
+.radio-pill:hover {
+  border-color: #d5dae2;
+  background: var(--surface-muted);
+}
+
+.radio-pill.is-selected {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.08);
+}
+
+.radio-pill input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rp-dot {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  transition: border-color 0.15s ease, border-width 0.15s ease;
+}
+
+.radio-pill.is-selected .rp-dot {
+  border-color: var(--primary);
+  border-width: 5px;
+}
+
+.rp-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.radio-pill.is-selected .rp-text {
+  color: var(--primary);
+  font-weight: 600;
+}
+
 .upload-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
 }
+
 .upload-box {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px 16px;
-  border: 2px dashed #cbd5e1;
-  border-radius: 16px;
-  background: #f8fafc;
-  color: #64748b;
-  transition: all 0.2s;
+  gap: 10px;
+  padding: 22px 14px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-muted);
+  color: var(--text-muted);
   cursor: pointer;
-  gap: 8px;
-  position: relative;
   text-align: center;
+  transition: all 0.15s ease;
 }
+
 .upload-box:hover {
-  border-color: #2563eb;
-  background: #eff6ff;
-  color: #2563eb;
+  border-color: var(--primary-border);
+  background: var(--primary-soft);
+  color: var(--primary);
 }
+
 .upload-box.has-file {
-  border-color: #10b981;
-  background: #f0fdf4;
-  color: #065f46;
+  border-style: solid;
+  border-color: var(--success);
+  background: var(--success-soft);
+  color: var(--success);
 }
+
 .upload-box input {
   position: absolute;
   inset: 0;
   opacity: 0;
   cursor: pointer;
 }
-.upload-icon {
-  font-size: 1.5rem;
+
+.upload-icon { display: inline-flex; }
+
+.upload-label {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  word-break: break-word;
+  max-width: 100%;
 }
 
-/* Summary */
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
+
 .summary-item {
-  background: #f9fafb;
-  border-radius: 12px;
-  padding: 12px 16px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding: 12px 14px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-md);
 }
+
 .summary-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #64748b;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  color: var(--text-muted);
 }
+
 .summary-value {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #0f172a;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
   word-break: break-word;
 }
 
-/* Sticky Footer */
-.sticky-footer {
+.final-note {
+  padding: 12px 14px;
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-border);
+  border-radius: var(--r-md);
+}
+
+.final-note p {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.form-actions {
   position: sticky;
   bottom: 0;
-  background: #ffffff;
-  padding: 16px 0;
-  margin-top: 24px;
-  border-top: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
   z-index: 10;
+  margin-top: 20px;
+  padding: 14px 0;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: saturate(180%) blur(8px);
+  -webkit-backdrop-filter: saturate(180%) blur(8px);
+  border-top: 1px solid var(--border);
 }
-.btn-cancel {
-  padding: 12px 24px;
-  border: 1px solid #dbe2ea;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #334155;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.btn-cancel:hover {
-  background: #f1f5f9;
-}
-.btn-submit {
-  padding: 12px 28px;
-  border: none;
-  border-radius: 12px;
-  background: #2563eb;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
+
+.form-actions__inner {
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: background 0.2s;
+  justify-content: space-between;
+  gap: 12px;
 }
-.btn-submit:hover:not(:disabled) {
-  background: #1d4ed8;
+
+.form-actions__spacer { display: block; flex: 1; }
+.is-hidden { visibility: hidden; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: var(--r-md);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition: all 0.15s ease;
 }
-.btn-submit:disabled {
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-muted);
+  border-color: #d5dae2;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
+
 .spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: white;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
   border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
+  animation: spin 0.7s linear infinite;
 }
 
-/* Toast */
+@keyframes spin { to { transform: rotate(360deg); } }
+
 .toast {
   position: fixed;
   bottom: 24px;
-  right: 24px;
-  padding: 12px 24px;
-  border-radius: 100px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 100000;
-  font-size: 0.9rem;
+  padding: 12px 20px;
+  border-radius: var(--r-md);
+  font-size: 13px;
   font-weight: 500;
-}
-.toast.success {
-  background: #10b981;
-  color: white;
-}
-.toast.error {
-  background: #ef4444;
-  color: white;
+  max-width: min(92vw, 420px);
+  box-shadow: 0 12px 28px -10px rgba(13, 27, 42, 0.28);
 }
 
-/* Responsive */
+.toast.success { background: var(--text); color: #ffffff; }
+.toast.error { background: var(--danger); color: #ffffff; }
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translate(-50%, 8px);
+}
+
+.modal-enter-active,
+.modal-leave-active { transition: opacity 0.2s ease; }
+
+.modal-enter-from,
+.modal-leave-to { opacity: 0; }
+
+.modal-enter-active .modal-container,
+.modal-leave-active .modal-container {
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+}
+
+.modal-enter-from .modal-container,
+.modal-leave-to .modal-container {
+  transform: translateY(8px) scale(0.98);
+  opacity: 0;
+}
+
 @media (max-width: 640px) {
-  .apply-form-content {
-    padding: 24px 16px 0;
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
   }
-  .form-grid {
-    grid-template-columns: 1fr;
+
+  .modal-container {
+    max-width: 100%;
+    max-height: 94vh;
+    border-radius: 16px 16px 0 0;
   }
-  .sticky-footer {
-    flex-direction: column-reverse;
-    align-items: stretch;
+
+  .apply-content { padding: 22px 16px 0; }
+  .form-title { font-size: 19px; }
+  .form-subtitle { font-size: 12.5px; }
+  .stepper-list { display: none; }
+  .stepper-mobile { display: block; }
+  .form-section { padding: 16px; }
+  .radio-row,
+  .radio-pills-grid { grid-template-columns: 1fr; }
+  .upload-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .form-actions .btn { flex: 1; }
+  .toast {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    transform: none;
+    max-width: none;
   }
-  .btn-cancel, .btn-submit {
-    width: 100%;
-    justify-content: center;
-  }
+  .toast-enter-from,
+  .toast-leave-to { transform: translateY(8px); }
 }
 </style>

@@ -7,100 +7,168 @@
         @click.self="close"
       >
         <div class="modal-container">
-          <!-- HEADER -->
-          <div class="modal-header">
-            <div class="header-left">
+
+          <!-- ==========================================================
+               HEADER (sticky top)
+          =========================================================== -->
+          <header class="modal-header">
+            <div class="header-brand">
               <img
                 :src="logoImg"
-                alt="Logo"
+                alt="Logo perusahaan"
                 class="modal-logo"
               />
-              <div>
-                <h2>{{ job.title }}</h2>
-                <div class="company-location">
-                  {{ job.company }} &bull; {{ job.location }}
-                </div>
+              <div class="header-text">
+                <h2 class="modal-title">{{ job.title }}</h2>
+                <p class="modal-sub">
+                  {{ job.company }}
+                  <span class="dot-sep">·</span>
+                  {{ job.location }}
+                </p>
               </div>
             </div>
-            <button class="close-btn" @click="close">&times;</button>
-          </div>
 
-          <!-- BODY -->
+            <button
+              type="button"
+              class="close-btn"
+              aria-label="Tutup detail lowongan"
+              @click="close"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </header>
+
+          <!-- ==========================================================
+               BODY (scrollable)
+          =========================================================== -->
           <div class="modal-body">
-            <!-- MAIN CONTENT -->
+
+            <!-- MAIN CONTENT (scrollable area) -->
             <div class="main-content">
-              <section v-if="job.aboutPosition">
-                <h3>Tentang Posisi</h3>
-                <p>{{ job.aboutPosition }}</p>
+              <section v-if="job.aboutPosition" class="block">
+                <h3 class="block-title">Tentang Posisi</h3>
+                <p class="block-text">{{ job.aboutPosition }}</p>
               </section>
 
-              <section v-if="job.responsibilities.length">
-                <h3>Tanggung Jawab</h3>
-                <ul>
-                  <li v-for="item in job.responsibilities" :key="item">{{ item }}</li>
+              <section v-if="job.responsibilities.length" class="block">
+                <h3 class="block-title">Tanggung Jawab</h3>
+                <ul class="list">
+                  <li v-for="item in job.responsibilities" :key="item">
+                    <span class="list-dot"></span>
+                    <span>{{ item }}</span>
+                  </li>
                 </ul>
               </section>
 
-              <section v-if="job.requirements.length">
-                <h3>Persyaratan</h3>
-                <ul>
-                  <li v-for="item in job.requirements" :key="item">{{ item }}</li>
+              <section v-if="job.requirements.length" class="block">
+                <h3 class="block-title">Persyaratan</h3>
+                <ul class="list">
+                  <li v-for="item in job.requirements" :key="item">
+                    <span class="list-dot"></span>
+                    <span>{{ item }}</span>
+                  </li>
                 </ul>
               </section>
 
-              <section v-if="job.benefits.length">
-                <h3>Benefit</h3>
-                <ul>
-                  <li v-for="item in job.benefits" :key="item">{{ item }}</li>
+              <section v-if="job.benefits.length" class="block">
+                <h3 class="block-title">Benefit</h3>
+                <ul class="list">
+                  <li v-for="item in job.benefits" :key="item">
+                    <span class="list-dot list-dot-success"></span>
+                    <span>{{ item }}</span>
+                  </li>
                 </ul>
               </section>
 
-              <section v-if="job.skills.length">
-                <h3>Skill yang Dibutuhkan</h3>
-                <div class="skills-list">
-                  <span v-for="skill in job.skills" :key="skill" class="skill-pill">{{ skill }}</span>
+              <section v-if="job.skills.length" class="block">
+                <h3 class="block-title">Skill yang Dibutuhkan</h3>
+                <div class="skills">
+                  <span
+                    v-for="skill in job.skills"
+                    :key="skill"
+                    class="skill-pill"
+                  >
+                    {{ skill }}
+                  </span>
                 </div>
               </section>
             </div>
 
-            <!-- SIDE PANEL -->
+            <!-- SIDE PANEL (sticky — tetap terlihat saat scroll) -->
             <aside class="side-panel">
               <div class="info-card">
                 <div class="info-row">
-                  <span class="label">Gaji</span>
-                  <strong class="value">{{ job.salary }}</strong>
+                  <span class="info-label">Gaji</span>
+                  <strong class="info-value">{{ job.salary }}</strong>
                 </div>
                 <div class="info-row">
-                  <span class="label">Pengalaman</span>
-                  <span class="value">{{ job.experience }}</span>
+                  <span class="info-label">Pengalaman</span>
+                  <span class="info-value">{{ job.experience }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="label">Pendidikan</span>
-                  <span class="value">{{ job.education }}</span>
+                  <span class="info-label">Pendidikan</span>
+                  <span class="info-value">{{ job.education }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="label">Tipe Pekerjaan</span>
-                  <span class="value">{{ job.type }}</span>
+                  <span class="info-label">Tipe Pekerjaan</span>
+                  <span class="info-value">{{ job.type }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="label">Deadline</span>
-                  <span class="value deadline">{{ formatDeadline(job.deadline) }}</span>
+                  <span class="info-label">Deadline</span>
+                  <span class="info-value is-deadline">
+                    {{ formatDeadline(job.deadline) }}
+                  </span>
                 </div>
                 <div class="info-row">
-                  <span class="label">Diposting</span>
-                  <span class="value">{{ formatRelative(job.postedAt) }}</span>
+                  <span class="info-label">Diposting</span>
+                  <span class="info-value">
+                    {{ formatRelative(job.postedAt) }}
+                  </span>
                 </div>
-
-                <button class="apply-btn" @click="handleApply">
-                  Lamar Sekarang
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </button>
               </div>
             </aside>
+
           </div>
+
+          <!-- ==========================================================
+               FOOTER (sticky bottom)
+          =========================================================== -->
+          <footer class="modal-footer">
+            <div class="footer-info">
+              <span class="footer-label">Gaji</span>
+              <strong class="footer-value">{{ job.salary }}</strong>
+            </div>
+
+            <div class="footer-actions">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                @click="close"
+              >
+                Tutup
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-primary"
+                @click="handleApply"
+              >
+                <span>Lamar Sekarang</span>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </button>
+            </div>
+          </footer>
+
         </div>
       </div>
     </Transition>
@@ -108,31 +176,31 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import type { Job } from '../types/jobs.types'
-import { JobsService } from '../services/jobs.service'
-import logoImg from '../../assets/images/logo.jpg'
+import { useRouter } from 'vue-router';
+import type { Job } from '../types/jobs.types';
+import { JobsService } from '../services/jobs.service';
+import logoImg from '../../assets/images/logo.jpg';
 
-const props = defineProps<{ job: Job | null }>()
+const props = defineProps<{ job: Job | null }>();
 
 const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'apply', job: Job): void
-}>()
+  (e: 'close'): void;
+  (e: 'apply', job: Job): void;
+}>();
 
-const router = useRouter()
+const router = useRouter();
 
 function close() {
-  document.body.style.overflow = 'auto'
-  emit('close')
+  document.body.style.overflow = 'auto';
+  emit('close');
 }
 
 function formatRelative(d: string) {
-  return JobsService.formatRelativeDate(d)
+  return JobsService.formatRelativeDate(d);
 }
 
 function formatDeadline(d: string | null) {
-  return JobsService.formatDeadline(d)
+  return JobsService.formatDeadline(d);
 }
 
 function handleApply() {
@@ -140,237 +208,499 @@ function handleApply() {
     localStorage.getItem('candidate_token') ||
     localStorage.getItem('token') ||
     localStorage.getItem('auth_token') ||
-    localStorage.getItem('access_token')
+    localStorage.getItem('access_token');
 
   if (!token) {
-    router.push('/login')
-    return
+    router.push('/login');
+    return;
   }
 
   if (props.job) {
-    emit('apply', props.job)
-    close() // opsional: tutup detail modal agar form muncul di atas
+    emit('apply', props.job);
+    close();
   }
 }
 </script>
 
 <style scoped>
-/* ========================================
-   MODAL OVERLAY & CONTAINER
-   ======================================== */
+/* ============================================================
+   DESIGN TOKENS
+============================================================ */
+.modal-overlay {
+  --primary: #2f6bff;
+  --primary-hover: #2457d6;
+  --primary-soft: #eef2ff;
+
+  --success: #16a34a;
+  --success-soft: #ecfdf5;
+
+  --danger: #dc2626;
+
+  --text: #0d1b2a;
+  --text-secondary: #4a5568;
+  --text-muted: #8b95a5;
+  --text-faint: #a8b0bd;
+
+  --surface: #ffffff;
+  --surface-muted: #fafbfd;
+  --border: #e5e9ef;
+  --border-soft: #eef1f6;
+
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 10px;
+}
+
+/* ============================================================
+   OVERLAY
+============================================================ */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(4px);
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
   padding: 20px;
+  background: rgba(13, 27, 42, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
 }
 
+/* ============================================================
+   CONTAINER
+============================================================ */
 .modal-container {
-  background: white;
   width: 100%;
-  max-width: 1100px;
-  max-height: calc(100vh - 40px);
-  border-radius: 24px;
-  overflow: hidden;
+  max-width: 1080px;
+  max-height: min(90vh, 780px);
+
   display: flex;
   flex-direction: column;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12);
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow:
+    0 24px 48px -12px rgba(13, 27, 42, 0.18),
+    0 12px 24px -12px rgba(13, 27, 42, 0.10);
+
+  overflow: hidden;
+
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--text);
 }
 
-/* HEADER */
+/* ============================================================
+   HEADER
+============================================================ */
 .modal-header {
+  flex-shrink: 0;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 22px 28px;
-  border-bottom: 1px solid #e2e8f0;
-  background: white;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-soft);
 }
 
-.header-left {
+.header-brand {
   display: flex;
   align-items: center;
   gap: 14px;
-}
-
-.modal-logo {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  object-fit: cover;
-}
-
-h2 {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 4px;
-}
-
-.company-location {
-  font-size: 0.9rem;
-  color: #64748b;
-}
-
-.close-btn {
-  width: 38px;
-  height: 38px;
-  border: none;
-  border-radius: 50%;
-  background: #f1f5f9;
-  color: #64748b;
-  font-size: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-.close-btn:hover {
-  background: #e2e8f0;
-  color: #0f172a;
-}
-
-/* BODY */
-.modal-body {
-  display: flex;
-  gap: 28px;
-  padding: 28px;
-  overflow-y: auto;
-}
-
-.main-content {
+  min-width: 0;
   flex: 1;
 }
 
-.main-content section {
-  margin-bottom: 28px;
-}
-
-.main-content h3 {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 12px;
-}
-
-.main-content p,
-li {
-  font-size: 0.95rem;
-  line-height: 1.7;
-  color: #334155;
-}
-
-ul {
-  padding-left: 18px;
-}
-
-li {
-  margin-bottom: 6px;
-}
-
-/* SKILLS */
-.skills-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.skill-pill {
-  background: #f1f5f9;
-  color: #334155;
-  font-size: 0.85rem;
-  padding: 6px 14px;
-  border-radius: 999px;
-}
-
-/* SIDE PANEL */
-.side-panel {
-  width: 300px;
+.modal-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-md);
+  object-fit: cover;
+  border: 1px solid var(--border);
   flex-shrink: 0;
 }
 
+.header-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modal-sub {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  line-height: 1.5;
+}
+
+.dot-sep {
+  margin: 0 3px;
+  color: var(--text-faint);
+}
+
+.close-btn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.close-btn:hover {
+  background: var(--surface-muted);
+  border-color: #d5dae2;
+  color: var(--text);
+}
+
+.close-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   BODY (scroll container)
+============================================================ */
+.modal-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  display: flex;
+  align-items: flex-start;    /* 🔑 supaya child tidak stretch */
+  gap: 28px;
+  padding: 24px;
+  background: var(--surface);
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-body::-webkit-scrollbar-thumb {
+  background: #d5dae2;
+  border-radius: 999px;
+}
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #c1c8d1;
+}
+
+/* ============================================================
+   MAIN CONTENT
+============================================================ */
+.main-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.block-title {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.block-text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  white-space: pre-line;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.list-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--primary);
+  flex-shrink: 0;
+  margin-top: 8px;
+}
+
+.list-dot-success {
+  background: var(--success);
+}
+
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.skill-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 12px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: -0.005em;
+}
+
+/* ============================================================
+   SIDE PANEL — STICKY
+   Tetap menempel di atas saat konten utama di-scroll
+============================================================ */
+.side-panel {
+  width: 280px;
+  flex-shrink: 0;
+
+  position: sticky;
+  top: 0;                    /* 🔑 menempel di atas scroll container */
+  align-self: flex-start;    /* 🔑 tanpa ini sticky tidak akan bekerja */
+}
+
 .info-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 18px;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 16px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-lg);
 }
 
 .info-row {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 12px 0;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-soft);
 }
-.info-row:last-of-type {
+
+.info-row:last-child {
   border-bottom: none;
 }
 
-.label {
-  color: #64748b;
-  font-size: 0.9rem;
+.info-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
-.value {
-  color: #0f172a;
-  font-size: 0.92rem;
+.info-value {
+  font-size: 12.5px;
   font-weight: 600;
+  color: var(--text);
   text-align: right;
+  letter-spacing: -0.005em;
+  word-break: break-word;
+  line-height: 1.45;
 }
 
-.deadline {
-  color: #ef4444;
+.info-value.is-deadline {
+  color: var(--danger);
 }
 
-/* APPLY BUTTON */
-.apply-btn {
-  width: 100%;
-  margin-top: 20px;
-  padding: 14px;
-  border: none;
-  border-radius: 14px;
-  background: #2563eb;
-  color: white;
-  font-size: 0.95rem;
-  font-weight: 600;
+/* ============================================================
+   FOOTER (sticky bottom)
+============================================================ */
+.modal-footer {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
-}
-.apply-btn:hover {
-  background: #1d4ed8;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 24px;
+  background: var(--surface);
+  border-top: 1px solid var(--border-soft);
 }
 
-/* TRANSITION */
+.footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.footer-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.footer-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: var(--r-md);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-muted);
+  border-color: #d5dae2;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   TRANSITION
+============================================================ */
 .modal-enter-active,
 .modal-leave-active {
   transition: opacity 0.2s ease;
 }
+
 .modal-enter-from,
 .modal-leave-to {
   opacity: 0;
 }
 
-/* RESPONSIVE */
+.modal-enter-active .modal-container,
+.modal-leave-active .modal-container {
+  transition:
+    transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s ease;
+}
+
+.modal-enter-from .modal-container,
+.modal-leave-to .modal-container {
+  transform: translateY(8px) scale(0.98);
+  opacity: 0;
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
 @media (max-width: 1024px) {
   .modal-container {
     max-width: 95vw;
   }
+
   .modal-body {
     flex-direction: column;
+    gap: 20px;
   }
+
   .side-panel {
     width: 100%;
+    position: static;     /* 🔑 matikan sticky di tablet & mobile */
+    order: -1;            /* info card tampil di atas */
   }
 }
 
@@ -379,20 +709,71 @@ li {
     padding: 0;
     align-items: flex-end;
   }
+
   .modal-container {
     max-width: 100%;
-    max-height: 100vh;
-    border-radius: 24px 24px 0 0;
+    max-height: 92vh;
+    border-radius: 16px 16px 0 0;
   }
-  .modal-header,
+
+  .modal-header {
+    padding: 16px 18px 14px;
+  }
+
+  .modal-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .modal-title {
+    font-size: 15.5px;
+  }
+
+  .modal-sub {
+    font-size: 12px;
+  }
+
   .modal-body {
     padding: 18px;
+    gap: 18px;
   }
-  h2 {
-    font-size: 1.1rem;
+
+  .modal-footer {
+    padding: 12px 16px;
+    gap: 10px;
   }
-  .company-location {
-    font-size: 0.82rem;
+
+  .footer-value {
+    font-size: 13px;
+  }
+
+  .footer-actions .btn {
+    height: 36px;
+    padding: 0 14px;
+    font-size: 12.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-info {
+    display: none;
+  }
+
+  .footer-actions {
+    width: 100%;
+  }
+
+  .footer-actions .btn {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-enter-active,
+  .modal-leave-active,
+  .modal-enter-active .modal-container,
+  .modal-leave-active .modal-container {
+    transition: none;
   }
 }
 </style>

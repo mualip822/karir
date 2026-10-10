@@ -1,36 +1,60 @@
-export interface Lowongan {
-  id: number
-  title: string
-  lokasi: string
-  perusahaan: string
-  gajiMin: number
-  gajiMax: number
-  deskripsi: string
-  tanggalPosting: string
+export type LamaranStatus =
+  | 'pending'
+  | 'review'
+  | 'interview'
+  | 'accepted'
+  | 'rejected';
+
+export interface LamaranSummary {
+  id: number;
+  lowongan_id: number;
+  posisi: string;
+  lembaga: string;
+  lokasi: string;
+  status: LamaranStatus;
+  created_at: string;
 }
 
-export interface Lamaran {
-  id: number
-  lowonganId: number
-  posisi: string
-  stage: 'Apply' | 'Screening' | 'Interview' | 'Hiring'
-  created_at: string
+export interface Lowongan {
+  id: number;
+  title: string;
+  divisi: string;
+  lokasi: string;
+  deskripsi?: string;
+  tipePekerjaan: string;
+  gajiMin: number;
+  gajiMax: number;
+  pengalaman: string;
+  pendidikan?: string;
+  perusahaan: string;
+  tanggalPosting: string;
 }
 
 export interface DashboardStats {
-  total: number
-  screening: number
-  interview: number
-  hiring: number
+  total: number;
+  pending: number;
+  review: number;
+  interview: number;
+  accepted: number;
+  rejected: number;
 }
 
 export interface StatusBar {
-  label: string
-  value: number
+  status: LamaranStatus;
+  label: string;
+  count: number;
+  value: number;
 }
 
-export interface ApplyPayload {
-  lowonganId: number
-  posisi: string
-  created_at: string
+export interface ActivityPoint {
+  label: string;
+  value: number;
+}
+
+export interface ProfileCompletion {
+  percentage: number;
+  filled: number;
+  total: number;
+  hint: string;
+  missing: string[];
 }

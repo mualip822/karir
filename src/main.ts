@@ -1,32 +1,72 @@
-import { createApp } from "vue";
+import { createApp } from "vue"
+import { createPinia } from "pinia"
 
-import App from "./App.vue";
+import App from "./App.vue"
+import router from "./router"
 
-import router from "./router";
-
-import { createPinia } from "pinia";
-
-import vue3GoogleLogin from "vue3-google-login";
+import vue3GoogleLogin from "vue3-google-login"
 
 // ================= VUETIFY =================
-import vuetify from "./plugins/vuetify";
+import vuetify from "./plugins/vuetify"
 
 // ================= STYLE =================
-import "vuetify/styles";
+import "vuetify/styles"
 
-const app = createApp(App);
+// ================= AUTH =================
+import { useAuthStore } from "./auth/stores/useAuthStore"
 
-app.use(createPinia());
 
-app.use(router);
+// ======================================================
+// CREATE APP
+// ======================================================
+const app = createApp(App)
 
-app.use(vuetify);
 
+// ======================================================
+// PINIA
+// ======================================================
+const pinia = createPinia()
+
+app.use(pinia)
+
+
+// ======================================================
+// RESTORE AUTH
+// ======================================================
+// PENTING:
+// Harus dilakukan setelah Pinia dipasang,
+// tetapi SEBELUM app.mount()
+//
+// Dengan ini ketika browser di-refresh:
+// localStorage token -> authStore.token
+// ======================================================
+const authStore = useAuthStore()
+
+authStore.initAuth()
+
+
+// ======================================================
+// ROUTER
+// ======================================================
+app.use(router)
+
+
+// ======================================================
+// VUETIFY
+// ======================================================
+app.use(vuetify)
+
+
+// ======================================================
+// GOOGLE LOGIN
+// ======================================================
 app.use(vue3GoogleLogin, {
-
   clientId:
     "288306900403-nilg3lo8kerodbk2n283sk48oajg2hkt.apps.googleusercontent.com",
+})
 
-});
 
-app.mount("#app");
+// ======================================================
+// MOUNT APP
+// ======================================================
+app.mount("#app")

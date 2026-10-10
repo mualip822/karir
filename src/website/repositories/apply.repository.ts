@@ -4,11 +4,34 @@ import type {
   UploadFiles,
 } from "../types/apply.types";
 
+// =====================================================
+// API CONFIG
+// =====================================================
 
-  const API_URL =
-  `${import.meta.env.VITE_API_URL}/apply`
+const API_URL = import.meta.env.VITE_API_URL;
+
+console.log("[ApplyRepository] API URL:", API_URL);
+
+// =====================================================
+// AXIOS CLIENT
+// =====================================================
+
+const apiClient = axios.create({
+  baseURL: API_URL,
+  timeout: 15000,
+});
+
+// =====================================================
+// APPLY REPOSITORY
+// =====================================================
 
 export const ApplyRepository = {
+
+  // ===================================================
+  // SUBMIT LAMARAN
+  // POST /apply
+  // ===================================================
+
   async submit(
     token: string,
     payload: ApplyPayload,
@@ -16,118 +39,110 @@ export const ApplyRepository = {
   ) {
     const formData = new FormData();
 
-    Object.entries(payload).forEach(
-      ([key, value]) => {
-        if (
-          value !== undefined &&
-          value !== null
-        ) {
-          formData.append(
-            key,
-            String(value)
-          );
-        }
+    Object.entries(payload).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, String(value));
+      }
+    });
+
+    if (files.cv) {
+      formData.append("cv", files.cv);
+    }
+
+    if (files.ijazah) {
+      formData.append("ijazah", files.ijazah);
+    }
+
+    if (files.transkrip) {
+      formData.append("transkrip", files.transkrip);
+    }
+
+    if (files.pendukung) {
+      formData.append("pendukung", files.pendukung);
+    }
+
+    const response = await apiClient.post(
+      "/apply",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
       }
     );
 
-    if (files.cv)
-      formData.append(
-        "cv",
-        files.cv
-      );
+    return response.data;
+  },
 
-    if (files.ijazah)
-      formData.append(
-        "ijazah",
-        files.ijazah
-      );
+  // ===================================================
+  // GET MY APPLICATIONS
+  // GET /apply/my-applications
+  // ===================================================
 
-    if (files.transkrip)
-      formData.append(
-        "transkrip",
-        files.transkrip
-      );
-
-    if (files.pendukung)
-      formData.append(
-        "pendukung",
-        files.pendukung
-      );
-
-    const response =
-      await axios.post(
-        API_URL,
-        formData,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-            "Content-Type":
-              "multipart/form-data",
-          },
-        }
-      );
+  async getMyApplications(token: string) {
+    const response = await apiClient.get(
+      "/apply/my-applications",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     return response.data;
   },
 
-  async getMyApplications(
-    token: string
-  ) {
-    const response =
-      await axios.get(
-        `${API_URL}/my-applications`,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
-
-    return response.data;
-  },
+  // ===================================================
+  // GET DETAIL APPLICATION
+  // GET /apply/:id
+  // ===================================================
 
   async getDetail(
     token: string,
     id: number
   ) {
-    const response =
-      await axios.get(
-        `${API_URL}/${id}`,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
+    const response = await apiClient.get(
+      `/apply/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     return response.data;
   },
 
-  async getProfile(
-    token: string
-  ) {
-    const response =
-      await axios.get(
-        `${import.meta.env.VITE_API_URL}/profile`,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
+  // ===================================================
+  // GET PROFILE
+  // ===================================================
+
+  async getProfile(token: string) {
+    const response = await apiClient.get(
+      "/profile",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     return response.data;
   },
+
+  // ===================================================
+  // GET LOWONGAN
+  // GET /rekrutmen
+  // ===================================================
 
   async getJobs() {
-  const response = await axios.get(
-    `${import.meta.env.VITE_API_URL}/rekrutmen/lowongan`
-  );
+    const response = await apiClient.get(
+      "/rekrutmen"
+    );
 
-  return response.data;
-}
+    return response.data;
+  },
 };
+
+export default ApplyRepository;
