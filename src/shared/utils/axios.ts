@@ -1,7 +1,14 @@
+
 import axios from "axios";
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+
 const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: API_BASE_URL,
+  headers: {
+    Accept: "application/json",
+  },
 });
 
 api.interceptors.request.use(
@@ -12,17 +19,14 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Jangan set Content-Type secara manual untuk FormData.
-    // Browser akan membuat multipart/form-data + boundary otomatis.
+    // Biarkan browser menentukan Content-Type untuk FormData.
     if (!(config.data instanceof FormData)) {
       config.headers["Content-Type"] = "application/json";
     }
 
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 api.interceptors.response.use(
